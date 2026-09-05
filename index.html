@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -140,20 +139,29 @@
       opacity: 0.85;
     }
 
-    .timer-bar {
-      background: var(--accent-yellow);
+    .delivery-info-bar {
       text-align: center;
-      padding: 12px;
+      padding: 14px 18px;
       font-weight: 700;
-      font-size: 1rem;
+      font-size: 0.98rem;
       border-radius: 12px;
       max-width: 650px;
-      margin: 20px auto 12px;
+      margin: 0 auto 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
       line-height: 1.4;
     }
 
-    /* Promo Banner without dashed border */
+    .delivery-info-bar.zones {
+      background: #ffffff;
+      border: 2px solid var(--accent-yellow);
+      color: var(--text-dark);
+    }
+
+    .delivery-info-bar.bonus {
+      background: var(--accent-yellow);
+      color: var(--text-dark);
+    }
+
     .promo-bar {
       background: var(--primary-green);
       color: white;
@@ -174,11 +182,34 @@
       padding: 0 20px;
     }
 
+    /* Titles & Subtitles */
+    .section-header {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
     .section-title {
       font-size: 1.8rem;
       font-weight: 800;
-      margin-bottom: 25px;
+      margin-bottom: 5px;
+    }
+
+    .section-subtitle {
+      font-size: 0.95rem;
+      color: #666;
+      font-weight: 600;
+    }
+
+    /* Стиль для блоков-заглушек выходных дней */
+    .day-off-banner {
+      border-radius: var(--radius);
+      padding: 30px 20px;
       text-align: center;
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--primary-green-hover);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+      margin-bottom: 60px;
     }
 
     .grid {
@@ -238,7 +269,6 @@
       color: var(--text-dark);
     }
 
-    /* Add Button with shrink effect on click */
     .add-btn {
       background: var(--primary-green);
       color: white;
@@ -264,29 +294,6 @@
 
     .delivery-section {
       margin-bottom: 60px;
-    }
-
-    .delivery-info-bar {
-      text-align: center;
-      padding: 14px 18px;
-      font-weight: 700;
-      font-size: 0.98rem;
-      border-radius: 12px;
-      max-width: 650px;
-      margin: 0 auto 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-      line-height: 1.4;
-    }
-
-    .delivery-info-bar.zones {
-      background: #ffffff;
-      border: 2px solid var(--accent-yellow);
-      color: var(--text-dark);
-    }
-
-    .delivery-info-bar.bonus {
-      background: var(--accent-yellow);
-      color: var(--text-dark);
     }
 
     .map-wrapper {
@@ -377,13 +384,42 @@
       display: inline-block;
     }
 
+    .cart-section-group {
+      margin-bottom: 20px;
+      border-radius: 12px;
+      background: #fafafa;
+      padding: 12px;
+      border: 1px solid #eaeaea;
+    }
+
+    .cart-group-title {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--primary-green-hover);
+      margin-bottom: 8px;
+      border-bottom: 2px solid var(--accent-yellow);
+      padding-bottom: 4px;
+    }
+
     .cart-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 12px 0;
+      padding: 10px 0;
       border-bottom: 1px solid #eee;
       gap: 10px;
+    }
+
+    .cart-item:last-child {
+      border-bottom: none;
+    }
+
+    .cutlery-item {
+      margin-top: 8px;
+      padding: 8px;
+      border-top: 1px dashed #ccc;
+      background-color: #fff;
+      border-radius: 8px;
     }
 
     .cart-item-info { flex-grow: 1; }
@@ -499,7 +535,6 @@
       transform: scale(1.15) rotate(5deg);
     }
 
-    /* Cat expression toggle on hover */
     .cat-eye-normal { opacity: 1; transition: opacity 0.2s; }
     .cat-eye-happy { opacity: 0; transition: opacity 0.2s; }
     .cat-mouth-normal { opacity: 1; transition: opacity 0.2s; }
@@ -530,23 +565,42 @@
 
   <section class="hero">
     <h1 data-key="hero-title">Свежие домашние обеды в Тбилиси</h1>
-    <p data-key="hero-sub">Обновление меню каждую неделю. Готовим с любовью и заботой!</p>
+    <p data-key="hero-sub">Регулярные обновления меню. Готовим с любовью и заботой!</p>
   </section>
-
-  <div class="delivery-info-bar zones" data-key="timer-text">
-    ⏰ Режим работы: вс-пт с 09:00 до 15:00. В субботу - отдыхаем и создаем новые обеды для Вас.
-  </div>
 
   <div class="promo-bar" data-key="promo-text">
     🎁 При заказе от 3-х блюд скидка 10% на всю корзину!
   </div>
 
   <main class="container">
-    <h2 class="section-title" data-key="menu-title">Сегодня мы готовим</h2>
-    <div class="grid" id="food-grid"></div>
+    <!-- Block 1: Сегодня мы готовим -->
+    <section class="menu-section" id="today-section">
+      <div class="section-header" id="today-header">
+        <h2 class="section-title" data-key="today-title">Сегодня мы готовим</h2>
+        <p class="section-subtitle" data-key="today-sub">Обед будет у вас в течении 2-х часов</p>
+      </div>
+      <div class="grid" id="today-food-grid"></div>
+      <h2 class="day-off-banner" id="today-off-banner" style="display: none;" data-key="today-off-text">
+        Сегодня мы отдыхаем и придумываем новые позиции для вас!
+      </h2>
+    </section>
+
+    <!-- Block 2: Предзаказ на завтра -->
+    <section class="menu-section" id="tomorrow-section">
+      <div class="section-header" id="tomorrow-header">
+        <h2 class="section-title" data-key="tomorrow-title">Предзаказ на завтра</h2>
+        <p class="section-subtitle" data-key="tomorrow-sub">Доставим завтра с 9:00 до 15:00</p>
+      </div>
+      <div class="grid" id="tomorrow-food-grid"></div>
+      <h2 class="day-off-banner" id="tomorrow-off-banner" style="display: none;" data-key="tomorrow-off-text">
+        Предзаказ станет доступен в понедельник
+      </h2>
+    </section>
 
     <section class="delivery-section">
-      <h2 class="section-title" data-key="delivery-title">Как мы доставляем</h2>
+      <div class="section-header">
+        <h2 class="section-title" data-key="delivery-title">Как мы доставляем</h2>
+      </div>
       
       <div class="delivery-info-bar zones" data-key="delivery-zones">
         🚚 Зелёная зона — доставка бесплатная. Жёлтая зона — доставка по тарифу Яндекс Go.
@@ -611,42 +665,34 @@
     </div>
     <p style="margin-top:20px; font-size:0.8rem; opacity:0.5;">© ROM’ÜL 2026. All rights reserved.</p>
     
-    <!-- Cat Icon below All Rights Reserved -->
     <div class="cat-container" title="Мяу!">
       <svg class="cat-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <!-- Cat Body & Ears -->
         <circle cx="50" cy="55" r="35" fill="#f8e596"/>
         <polygon points="20,30 32,5 45,32" fill="#f8e596"/>
         <polygon points="24,28 32,10 41,30" fill="#e8d8c3"/>
         <polygon points="80,30 68,5 55,32" fill="#f8e596"/>
         <polygon points="76,28 68,10 59,30" fill="#e8d8c3"/>
         
-        <!-- Normal Eyes -->
         <g class="cat-eye-normal">
           <circle cx="38" cy="48" r="4" fill="#2c2926"/>
           <circle cx="62" cy="48" r="4" fill="#2c2926"/>
         </g>
         
-        <!-- Happy Eyes (Smiley ^ ^) -->
         <g class="cat-eye-happy">
           <path d="M 33 50 Q 38 43 43 50" stroke="#2c2926" stroke-width="3" stroke-linecap="round"/>
           <path d="M 57 50 Q 62 43 67 50" stroke="#2c2926" stroke-width="3" stroke-linecap="round"/>
         </g>
         
-        <!-- Nose -->
         <polygon points="47,56 53,56 50,59" fill="#2c2926"/>
         
-        <!-- Normal Mouth -->
         <g class="cat-mouth-normal">
           <path d="M 44 62 Q 47 65 50 62 Q 53 65 56 62" stroke="#2c2926" stroke-width="2" stroke-linecap="round"/>
         </g>
         
-        <!-- Happy Smiling Mouth -->
         <g class="cat-mouth-happy">
           <path d="M 42 61 Q 50 71 58 61" fill="#e74c3c" stroke="#2c2926" stroke-width="2"/>
         </g>
         
-        <!-- Whiskers -->
         <line x1="15" y1="52" x2="30" y2="54" stroke="#2c2926" stroke-width="2" stroke-linecap="round"/>
         <line x1="15" y1="60" x2="30" y2="58" stroke="#2c2926" stroke-width="2" stroke-linecap="round"/>
         <line x1="85" y1="52" x2="70" y2="54" stroke="#2c2926" stroke-width="2" stroke-linecap="round"/>
@@ -665,9 +711,14 @@
       ru: {
         'hero-title': 'Свежие домашние обеды',
         'hero-sub': 'Каждый день новое меню. Готовим с любовью и заботой!',
-        'timer-text': '⏰ Принимаем заказы до 13:00. Доставим завтра с 11:00 до 14:00.',
+        'timer-text': '⏰ Режим работы: вс-пт с 09:00 до 15:00. В субботу - отдыхаем и создаем новые обеды для Вас.',
         'promo-text': '🎁 При заказе от 3-х блюд скидка 10% на всю корзину!',
-        'menu-title': 'Сегодня мы готовим',
+        'today-title': 'Сегодня мы готовим',
+        'today-sub': 'Обед будет у вас в течении 2-х часов',
+        'today-off-text': 'Сегодня мы отдыхаем и придумываем новые позиции для вас!',
+        'tomorrow-title': 'Предзаказ на завтра',
+        'tomorrow-sub': 'Доставим завтра с 9:00 до 15:00',
+        'tomorrow-off-text': 'Предзаказ станет доступен в понедельник',
         'delivery-title': 'Как мы доставляем',
         'delivery-zones': '🚚 Зелёная зона — доставка бесплатная. Жёлтая зона — доставка по тарифу Яндекс Go.',
         'delivery-bonus': '🎉 5-ая доставка за наш счёт!',
@@ -679,14 +730,23 @@
         'add-btn': 'В корзину',
         'empty-cart': 'Корзина пока пуста',
         'clear-cart': 'Очистить корзину',
-        'discount-applied': 'Скидка применилась ✨ (-10%)'
+        'discount-applied': 'Скидка применилась ✨ (-10%)',
+        'cart-today-group': '🚀 Приедет сегодня',
+        'cart-tomorrow-group': '📅 Приедет завтра',
+        'cutlery-title': '🍴 Приборы (комплект)',
+        'cutlery-unit': '1 ₾ / шт.'
       },
       en: {
         'hero-title': 'Fresh Homemade Lunches',
         'hero-sub': 'A new menu every day. Cooked with love and care!',
-        'timer-text': '⏰ We accept orders until 13:00. Delivery tomorrow from 11:00 to 14:00.',
+        'timer-text': '⏰ Opening hours: Sun-Fri 09:00-15:00. Saturday is our day off to craft new meals.',
         'promo-text': '🎁 Order 3 or more meals and get 10% off your entire cart!',
-        'menu-title': 'Today We are Cooking',
+        'today-title': 'Cooking Today',
+        'today-sub': 'Lunch will arrive within 2 hours',
+        'today-off-text': 'Today we are resting and creating new dishes for you!',
+        'tomorrow-title': 'Pre-order for Tomorrow',
+        'tomorrow-sub': 'Delivery tomorrow from 9:00 to 15:00',
+        'tomorrow-off-text': 'Pre-orders will be available on Monday',
         'delivery-title': 'How We Deliver',
         'delivery-zones': '🚚 Green zone — free delivery. Yellow zone — Yandex Go fare delivery.',
         'delivery-bonus': '🎉 5th delivery is on us!',
@@ -698,65 +758,138 @@
         'add-btn': 'Add to Cart',
         'empty-cart': 'Your cart is empty',
         'clear-cart': 'Clear cart',
-        'discount-applied': 'Discount applied ✨ (-10%)'
+        'discount-applied': 'Discount applied ✨ (-10%)',
+        'cart-today-group': '🚀 Arriving today',
+        'cart-tomorrow-group': '📅 Arriving tomorrow',
+        'cutlery-title': '🍴 Cutlery (set)',
+        'cutlery-unit': '1 ₾ / pcs.'
       }
     };
 
-    const foodData = [
+    // Блюда для блока "Сегодня мы готовим" (ID начинается с 100)
+    const todayFoodData = [
       {
-        id: 1,
+        id: 101,
+        type: 'today',
         title: { ru: 'Азиатский рис со свининой', en: 'Fried rice with pork' },
         desc: { ru: 'Жаренный рис со свининой и овощами в азиатском стиле.', en: 'Asian-style fried rice with pork and vegetables.' },
         price: 12,
         image: '../romul.ge/images/dishes/pork-rice.jpg'
       },
       {
-        id: 2,
+        id: 102,
+        type: 'today',
         title: { ru: 'Панини с курицей', en: 'Chicken panini' },
         desc: { ru: 'Домашняя пшеничная лепёшка со свежими овощами, курицей и сливочным сыром.', en: 'Homemade wheat tortilla with fresh vegetables, chicken and cream-cheese.' },
         price: 12,
         image: '../romul.ge/images/dishes/panini-chicken.jpg'
       },
       {
-        id: 3,
+        id: 103,
+        type: 'today',
+        title: { ru: 'Тыквенный крем-суп с курицей', en: 'Pumpkin cream soup with chicken' },
+        desc: { ru: 'Нежный и насыщенный крем суп из тыквы с обжаренным куриным филе.', en: 'Smooth texture creamy pumpkin soup with roasted chicken fillet.' },
+        price: 12,
+        image: '../romul.ge/images/dishes/pumpkin-cream-soup.jpg'
+      },
+      {
+        id: 104,
+        type: 'today',
+        title: { ru: 'Фрикадельки в сливочном соусе с картофелем', en: 'Meatballs in cream sauce with potatoes' },
+        desc: { ru: 'Мясные домашние фрикадельки в нежном сливочно-перечном соусе с молодым картофелем.', en: 'Homemade meatballs in creamy pepper souce with potatoes.' },
+        price: 14,
+        image: '../romul.ge/images/dishes/for-releasing.jpg'
+      },
+      {
+        id: 105,
+        type: 'today',
         title: { ru: 'Салат с пряной тыквой', en: 'Spicy pumpkin salad' },
         desc: { ru: 'Сочетание тыквы, моркови и свежего огурца в авторском кисло-сладком соусе и микс трав.', en: 'Pumpkin, carrot and cucumber mixed with a special sweet and sour sauce, topped with a mix of herbs.' },
         price: 10,
         image: '../romul.ge/images/dishes/spicy-pumpkin-salad.jpg'
       },
       {
-        id: 4,
-        title: { ru: 'Тыквенный крем-суп с курицей', en: 'Pumpkin cream soup with chicken' },
-        desc: { ru: 'Нежный и насыщенный крем суп из тыквы с обжаренным куриным филе.', en: 'Smooth texture creamy pumpkin soup with roasted chicken fillet.' },
-        price: 12,
-        image: '../romul.ge/images/dishes/pumpkin-cream-soup.jpg'
-      },  
+        id: 106,
+        type: 'today',
+        title: { ru: 'Панкейки с заварным кремом', en: 'Pancake with custard' },
+        desc: { ru: 'Домашние панкейки с заварным кремом из сгущенки и джемом из сезонных ягод.', en: 'Homemade pancakes with condenced milk custard and seasonal berry jam.' },
+        price: 10,
+        image: '../romul.ge/images/dishes/pancakes.jpg'
+      }
+    ]; 
+
+    // Блюда для блока "Предзаказ на завтра" (ID начинается с 200)
+    const tomorrowFoodData = [
       {
-        id: 5,
+        id: 201,
+        type: 'tomorrow',
+        title: { ru: 'Лобио с говядиной', en: 'Tender beef lobio' },
+        desc: { ru: 'Нежная и насыщенная говядина томленая в красном вине с фасолью.', en: 'Tender and rich beef stewed in red wine with beans.' },
+        price: 18,
+        image: '../romul.ge/images/dishes/for-releasing.jpg'
+      },
+      {
+        id: 202,
+        type: 'tomorrow',
         title: { ru: 'Киш с курицей и грибами', en: 'Chicken mushroom pie' },
         desc: { ru: 'Нежное куриное филе, цветная капуста и грибы в сливочно-соевом соусе в корзинке из песочного теста.', en: 'Tender chicken fillet, cauliflower and mushroom with creamy and soy sauce in crispy shortcrust basket.' },
         price: 14,
         image: '../romul.ge/images/dishes/chicken-mushroom-pie.jpg'
       },
       {
-        id: 6,
-        title: { ru: 'Панкейки с заварным кремом', en: 'Pancake with custard' },
-        desc: { ru: 'Домашние панкейки с заварным кремом из сгущенки и джемом из сезонных ягод.', en: 'Homemade pancakes with condenced milk custard and seasonal berry jam.' },
-        price: 8,
-        image: '../romul.ge/images/dishes/pancakes.jpg'
+        id: 203,
+        type: 'tomorrow',
+        title: { ru: 'Стейк из свинины в азиатском стиле с картофельными оладьями', en: 'Asian styled pork steak with potato pancakes' },
+        desc: { ru: 'Нежная свинина в кисло-сладком соевом соусе с картофельными оладушками.', en: 'Tender pork in a sweet and sour soy sauce with potato pancakes.' },
+        price: 16,
+        image: '../romul.ge/images/dishes/for-releasing.jpg'
       }
     ];
 
     let cart = [];
+    let cutleryToday = 0;
+    let cutleryTomorrow = 0;
 
-    function renderMenu() {
-      const grid = document.getElementById('food-grid');
-      grid.innerHTML = '';
+    // Общий массив для поиска при добавлении в корзину
+    const getAllFoodItems = () => [...todayFoodData, ...tomorrowFoodData];
 
-      foodData.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.innerHTML = `
+    function checkSchedule() {
+      const today = new Date().getDay(); // 0 - Вс, 1 - Пн, 2 - Вт, 3 - Ср, 4 - Чт, 5 - Пт, 6 - Сб
+      
+      const todayHeader = document.getElementById('today-header');
+      const todayGrid = document.getElementById('today-food-grid');
+      const todayOffBanner = document.getElementById('today-off-banner');
+
+      const tomorrowHeader = document.getElementById('tomorrow-header');
+      const tomorrowGrid = document.getElementById('tomorrow-food-grid');
+      const tomorrowOffBanner = document.getElementById('tomorrow-off-banner');
+
+      // 1. По субботам (6) и воскресеньям (0) меняем блок "Сегодня мы готовим"
+      if (today === 6 || today === 0) {
+        todayHeader.style.display = 'none';
+        todayGrid.style.display = 'none';
+        todayOffBanner.style.display = 'block';
+      } else {
+        todayHeader.style.display = 'block';
+        todayGrid.style.display = 'grid';
+        todayOffBanner.style.display = 'none';
+      }
+
+      // 2. Каждую пятницу (5), субботу (6) и воскресенье (0) меняем блок "Предзаказ на завтра"
+      if (today === 5 || today === 6 || today === 0) {
+        tomorrowHeader.style.display = 'none';
+        tomorrowGrid.style.display = 'none';
+        tomorrowOffBanner.style.display = 'block';
+      } else {
+        tomorrowHeader.style.display = 'block';
+        tomorrowGrid.style.display = 'grid';
+        tomorrowOffBanner.style.display = 'none';
+      }
+    }
+
+    function createCardHTML(item) {
+      return `
+        <div class="card">
           <img src="${item.image}" alt="${item.title[currentLang]}">
           <div class="card-title">${item.title[currentLang]}</div>
           <div class="card-desc">${item.desc[currentLang]}</div>
@@ -764,14 +897,25 @@
             <div class="price">${item.price} ₾</div>
             <button class="add-btn" onclick="addToCart(${item.id})">${translations[currentLang]['add-btn']}</button>
           </div>
-        `;
-        grid.appendChild(card);
-      });
+        </div>
+      `;
+    }
+
+    function renderMenu() {
+      const todayGrid = document.getElementById('today-food-grid');
+      const tomorrowGrid = document.getElementById('tomorrow-food-grid');
+
+      todayGrid.innerHTML = todayFoodData.map(item => createCardHTML(item)).join('');
+      tomorrowGrid.innerHTML = tomorrowFoodData.map(item => createCardHTML(item)).join('');
+      
+      checkSchedule();
     }
 
     function addToCart(id) {
-      const item = foodData.find(f => f.id === id);
+      const allItems = getAllFoodItems();
+      const item = allItems.find(f => f.id === id);
       const inCart = cart.find(c => c.id === id);
+      
       if (inCart) {
         inCart.count++;
       } else {
@@ -791,6 +935,18 @@
       updateCartUI();
     }
 
+    function addCutlery(type) {
+      if (type === 'today') cutleryToday++;
+      if (type === 'tomorrow') cutleryTomorrow++;
+      updateCartUI();
+    }
+
+    function decreaseCutlery(type) {
+      if (type === 'today' && cutleryToday > 0) cutleryToday--;
+      if (type === 'tomorrow' && cutleryTomorrow > 0) cutleryTomorrow--;
+      updateCartUI();
+    }
+
     function removeItem(id) {
       cart = cart.filter(c => c.id !== id);
       updateCartUI();
@@ -798,17 +954,28 @@
 
     function clearCart() {
       cart = [];
+      cutleryToday = 0;
+      cutleryTomorrow = 0;
       updateCartUI();
     }
 
     function updateCartUI() {
-      const totalCount = cart.reduce((sum, i) => sum + i.count, 0);
-      const rawPrice = cart.reduce((sum, i) => sum + (i.price * i.count), 0);
+      const todayItems = cart.filter(item => item.type === 'today');
+      const tomorrowItems = cart.filter(item => item.type === 'tomorrow');
 
-      const hasDiscount = totalCount >= 3;
-      const finalPrice = hasDiscount ? Math.round(rawPrice * 0.9) : rawPrice;
+      if (todayItems.length === 0) cutleryToday = 0;
+      if (tomorrowItems.length === 0) cutleryTomorrow = 0;
 
-      document.getElementById('cart-count').innerText = totalCount;
+      const totalFoodCount = cart.reduce((sum, i) => sum + i.count, 0);
+      const rawFoodPrice = cart.reduce((sum, i) => sum + (i.price * i.count), 0);
+      const totalCutleryPrice = (cutleryToday + cutleryTomorrow) * 1;
+
+      const hasDiscount = totalFoodCount >= 3;
+      const discountedFoodPrice = hasDiscount ? Math.round(rawFoodPrice * 0.9) : rawFoodPrice;
+      const finalPrice = discountedFoodPrice + totalCutleryPrice;
+      const rawTotalPrice = rawFoodPrice + totalCutleryPrice;
+
+      document.getElementById('cart-count').innerText = totalFoodCount;
       document.getElementById('cart-total-header').innerText = `${finalPrice} ₾`;
       document.getElementById('cart-sum').innerText = finalPrice;
 
@@ -820,7 +987,7 @@
       if (hasDiscount) {
         discountBadge.style.display = 'block';
         oldPriceSpan.style.display = 'inline';
-        oldPriceSpan.innerText = `${rawPrice} ₾`;
+        oldPriceSpan.innerText = `${rawTotalPrice} ₾`;
       } else {
         discountBadge.style.display = 'none';
         oldPriceSpan.style.display = 'none';
@@ -831,33 +998,113 @@
         itemsContainer.innerHTML = `<p style="text-align:center; padding:20px; color:#888;">${translations[currentLang]['empty-cart']}</p>`;
       } else {
         clearBtn.style.display = 'inline-block';
-        itemsContainer.innerHTML = cart.map(i => `
-          <div class="cart-item">
-            <div class="cart-item-info">
-              <div class="cart-item-title">${i.title[currentLang]}</div>
-              <div class="cart-item-price">${i.price} ₾ / шт.</div>
+        let html = '';
+
+        // Отрисовка группы "Сегодня"
+        if (todayItems.length > 0) {
+          html += `<div class="cart-section-group">`;
+          html += `<div class="cart-group-title">${translations[currentLang]['cart-today-group']}</div>`;
+          todayItems.forEach(i => {
+            html += `
+              <div class="cart-item">
+                <div class="cart-item-info">
+                  <div class="cart-item-title">${i.title[currentLang]}</div>
+                  <div class="cart-item-price">${i.price} ₾ / шт.</div>
+                </div>
+                <div class="cart-controls">
+                  <button class="qty-btn" onclick="decreaseQty(${i.id})">-</button>
+                  <span>${i.count}</span>
+                  <button class="qty-btn" onclick="addToCart(${i.id})">+</button>
+                  <button class="remove-single-btn" onclick="removeItem(${i.id})" title="Удалить">🗑️</button>
+                </div>
+              </div>
+            `;
+          });
+          html += `
+            <div class="cart-item cutlery-item">
+              <div class="cart-item-info">
+                <div class="cart-item-title">${translations[currentLang]['cutlery-title']}</div>
+                <div class="cart-item-price">${translations[currentLang]['cutlery-unit']}</div>
+              </div>
+              <div class="cart-controls">
+                <button class="qty-btn" onclick="decreaseCutlery('today')">-</button>
+                <span>${cutleryToday}</span>
+                <button class="qty-btn" onclick="addCutlery('today')">+</button>
+              </div>
             </div>
-            <div class="cart-controls">
-              <button class="qty-btn" onclick="decreaseQty(${i.id})">-</button>
-              <span>${i.count}</span>
-              <button class="qty-btn" onclick="addToCart(${i.id})">+</button>
-              <button class="remove-single-btn" onclick="removeItem(${i.id})" title="Удалить">🗑️</button>
+          `;
+          html += `</div>`;
+        }
+
+        // Отрисовка группы "Завтра"
+        if (tomorrowItems.length > 0) {
+          html += `<div class="cart-section-group">`;
+          html += `<div class="cart-group-title">${translations[currentLang]['cart-tomorrow-group']}</div>`;
+          tomorrowItems.forEach(i => {
+            html += `
+              <div class="cart-item">
+                <div class="cart-item-info">
+                  <div class="cart-item-title">${i.title[currentLang]}</div>
+                  <div class="cart-item-price">${i.price} ₾ / шт.</div>
+                </div>
+                <div class="cart-controls">
+                  <button class="qty-btn" onclick="decreaseQty(${i.id})">-</button>
+                  <span>${i.count}</span>
+                  <button class="qty-btn" onclick="addToCart(${i.id})">+</button>
+                  <button class="remove-single-btn" onclick="removeItem(${i.id})" title="Удалить">🗑️</button>
+                </div>
+              </div>
+            `;
+          });
+          html += `
+            <div class="cart-item cutlery-item">
+              <div class="cart-item-info">
+                <div class="cart-item-title">${translations[currentLang]['cutlery-title']}</div>
+                <div class="cart-item-price">${translations[currentLang]['cutlery-unit']}</div>
+              </div>
+              <div class="cart-controls">
+                <button class="qty-btn" onclick="decreaseCutlery('tomorrow')">-</button>
+                <span>${cutleryTomorrow}</span>
+                <button class="qty-btn" onclick="addCutlery('tomorrow')">+</button>
+              </div>
             </div>
-          </div>
-        `).join('');
+          `;
+          html += `</div>`;
+        }
+
+        itemsContainer.innerHTML = html;
       }
 
+      // Генерация текста заказа для Telegram
       let orderText = currentLang === 'ru' 
         ? `Привет, ROM’ÜL! Хочу заказать обед:\n` 
         : `Hi, ROM’ÜL! I would like to order lunch:\n`;
 
-      cart.forEach(i => {
-        orderText += `- ${i.title[currentLang]} x${i.count} (${i.price * i.count} ₾)\n`;
-      });
+      if (todayItems.length > 0) {
+        orderText += `\n${translations[currentLang]['cart-today-group']}:\n`;
+        todayItems.forEach(i => {
+          orderText += `- ${i.title[currentLang]} x${i.count} (${i.price * i.count} ₾)\n`;
+        });
+        if (cutleryToday > 0) {
+          const cutleryLabel = currentLang === 'ru' ? 'Приборы' : 'Cutlery';
+          orderText += `- ${cutleryLabel} x${cutleryToday} (${cutleryToday * 1} ₾)\n`;
+        }
+      }
+
+      if (tomorrowItems.length > 0) {
+        orderText += `\n${translations[currentLang]['cart-tomorrow-group']}:\n`;
+        tomorrowItems.forEach(i => {
+          orderText += `- ${i.title[currentLang]} x${i.count} (${i.price * i.count} ₾)\n`;
+        });
+        if (cutleryTomorrow > 0) {
+          const cutleryLabel = currentLang === 'ru' ? 'Приборы' : 'Cutlery';
+          orderText += `- ${cutleryLabel} x${cutleryTomorrow} (${cutleryTomorrow * 1} ₾)\n`;
+        }
+      }
 
       if (hasDiscount) {
         orderText += `\nСкидка 10% за 3+ блюда применилась! ✨\n`;
-        orderText += `Сумма без скидки: ${rawPrice} ₾\n`;
+        orderText += `Сумма без скидки: ${rawTotalPrice} ₾\n`;
         orderText += `Итого со скидкой: ${finalPrice} ₾`;
       } else {
         orderText += `\n${translations[currentLang]['total-label']} ${finalPrice} ₾`;
