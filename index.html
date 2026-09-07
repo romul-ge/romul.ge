@@ -157,11 +157,6 @@
       color: var(--text-dark);
     }
 
-    .delivery-info-bar.bonus {
-      background: var(--accent-yellow);
-      color: var(--text-dark);
-    }
-
     .promo-bar {
       background: var(--primary-green);
       color: white;
@@ -200,7 +195,6 @@
       font-weight: 600;
     }
 
-    /* Стиль для блоков-заглушек выходных дней */
     .day-off-banner {
       border-radius: var(--radius);
       padding: 30px 20px;
@@ -246,21 +240,86 @@
     .card-title {
       font-size: 1.2rem;
       font-weight: 700;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
+    }
+
+    /* Исправленный флип-блок для описания и КБЖУ */
+    .desc-container {
+      perspective: 1000px;
+      margin-bottom: 15px;
+      height: 105px;
+      position: relative;
+    }
+
+    .desc-flipper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.6s ease-in-out;
+      transform-style: preserve-3d;
+      cursor: pointer;
+    }
+
+    .desc-container:hover .desc-flipper {
+      transform: rotateY(180deg);
+    }
+
+    .card-desc, .card-kbju {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      border-radius: 12px;
+      padding: 10px;
+      box-sizing: border-box;
+      font-size: 0.85rem;
+      overflow-y: auto;
     }
 
     .card-desc {
-      font-size: 0.9rem;
-      color: #666;
-      margin-bottom: 15px;
-      flex-grow: 1;
+      color: #555;
+      background: #fdfdfd;
+      border: 1px solid #eee;
+      z-index: 2;
+      line-height: 1.35;
+    }
+
+    .card-kbju {
+      background: #fff8e1;
+      border: 1px solid #f3e5ab;
+      color: var(--text-dark);
+      transform: rotateY(180deg);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+    }
+
+    .kbju-title {
+      font-weight: 800;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+      border-bottom: 1px dashed rgba(0,0,0,0.2);
+      padding-bottom: 2px;
+      color: #444;
+    }
+
+    .kbju-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      font-size: 0.8rem;
     }
 
     .card-footer {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 10px;
+      margin-top: 5px;
     }
 
     .price {
@@ -603,11 +662,7 @@
       </div>
       
       <div class="delivery-info-bar zones" data-key="delivery-zones">
-        🚚 Зелёная зона — доставка бесплатная. Жёлтая зона — доставка по тарифу Яндекс Go, Bolt.
-      </div>
-      
-      <div class="promo-bar" data-key="delivery-bonus">
-        🎉 5-ая доставка за наш счёт!
+        🚚 Зелёная зона и любые станции метро — доставка бесплатная. Жёлтая зона — доставка по тарифу Яндекс Go, Bolt.
       </div>
 
       <div class="map-wrapper">
@@ -615,11 +670,11 @@
         <div class="map-legend">
           <div class="legend-item">
             <div class="legend-color" style="background: rgba(90, 130, 68, 0.8); border: 1px solid #476834;"></div>
-            <span data-key="legend-green">Зеленая зона (15 мин пешком от м. Самгори — Бесплатно)</span>
+            <span data-key="legend-green">Зеленая зона (15 мин пешком от м. Самгори и станции метро — Бесплатно)</span>
           </div>
           <div class="legend-item">
             <div class="legend-color" style="background: rgba(248, 229, 150, 0.8); border: 1px solid #d4b843;"></div>
-            <span data-key="legend-yellow">Желтая зона (Остальные районы — Тариф Яндекс Go)</span>
+            <span data-key="legend-yellow">Желтая зона (Остальные районы — Тариф Яндекс Go, Bolt)</span>
           </div>
         </div>
       </div>
@@ -711,7 +766,6 @@
       ru: {
         'hero-title': 'Свежие домашние обеды',
         'hero-sub': 'Регулярные обновления меню. Готовим с любовью и заботой!',
-        'timer-text': '⏰ Режим работы: вс-пт с 09:00 до 15:00. В субботу - отдыхаем и создаем новые обеды для Вас.',
         'promo-text': '🎁 При заказе от 3-х блюд скидка 10% на всю корзину!',
         'today-title': 'Сегодня мы готовим',
         'today-sub': 'Обед будет у вас в течении 2-х часов',
@@ -720,10 +774,10 @@
         'tomorrow-sub': 'Доставим завтра с 9:00 до 15:00',
         'tomorrow-off-text': 'Предзаказ станет доступен в понедельник',
         'delivery-title': 'Как мы доставляем',
-        'delivery-zones': '🚚 Зелёная зона — доставка бесплатная. Жёлтая зона — доставка по тарифу Яндекс Go, Bolt.',
-        'delivery-bonus': '🎉 5-ая доставка за наш счёт!',
-        'legend-green': 'Зеленая зона (15 мин пешком от м. Самгори — Бесплатно)',
-        'legend-yellow': 'Желтая зона (Остальные районы — Тариф Яндекс Go)',
+        'delivery-zones': '🚚 Зелёная зона и любые станции метро — доставка бесплатная. Жёлтая зона — доставка по тарифу Яндекс Go, Bolt.',
+        'legend-green': 'Зеленая зона (15 мин пешком от м. Самгори и станции метро — Бесплатно)',
+        'today-off-time': 'Мы с нетерпением ждем завтрашнего утра, чтобы принять Ваш заказ! Работаем с 09:00',
+        'legend-yellow': 'Желтая зона (Остальные районы — Тариф Яндекс Go, Bolt)',
         'cart-title': 'Ваш заказ',
         'total-label': 'Итого:',
         'btn-tg': 'Заказать через Telegram',
@@ -734,12 +788,16 @@
         'cart-today-group': '🚀 Приедет сегодня',
         'cart-tomorrow-group': '📅 Приедет завтра',
         'cutlery-title': '🍴 Приборы (комплект)',
-        'cutlery-unit': '1 ₾ / шт.'
+        'cutlery-unit': '1 ₾ / шт.',
+        'kbju-label': 'Пищевая ценность:',
+        'cal-label': 'ккал',
+        'p-label': 'б',
+        'f-label': 'ж',
+        'c-label': 'у'
       },
       en: {
         'hero-title': 'Fresh Homemade Lunches',
         'hero-sub': 'Regular menu updates. Cooked with love and care!',
-        'timer-text': '⏰ Opening hours: Sun-Fri 09:00-15:00. Saturday is our day off to craft new meals.',
         'promo-text': '🎁 Order 3 or more meals and get 10% off your entire cart!',
         'today-title': 'Cooking Today',
         'today-sub': 'Lunch will arrive within 2 hours',
@@ -748,10 +806,10 @@
         'tomorrow-sub': 'Delivery tomorrow from 9:00 to 15:00',
         'tomorrow-off-text': 'Pre-orders will be available on Monday',
         'delivery-title': 'How We Deliver',
-        'delivery-zones': '🚚 Green zone — free delivery. Yellow zone — Yandex Go and Bolt fare delivery.',
-        'delivery-bonus': '🎉 5th delivery is on us!',
-        'legend-green': 'Green zone (15 min walk from Samgori Metro — Free)',
-        'legend-yellow': 'Yellow zone (Other districts — Yandex Go Fare)',
+        'delivery-zones': '🚚 Green zone and any metro stations — free delivery. Yellow zone — Yandex Go fare delivery.',
+        'legend-green': 'Green zone (15 min walk from Samgori Metro & Metro stations — Free)',
+        'today-off-time': 'We look forward to tomorrow morning to take your order! Working from 09:00',
+        'legend-yellow': 'Yellow zone (Other districts — Yandex Go and Bolt Fare)',
         'cart-title': 'Your Order',
         'total-label': 'Total:',
         'btn-tg': 'Order via Telegram',
@@ -762,17 +820,22 @@
         'cart-today-group': '🚀 Arriving today',
         'cart-tomorrow-group': '📅 Arriving tomorrow',
         'cutlery-title': '🍴 Cutlery (set)',
-        'cutlery-unit': '1 ₾ / pcs.'
+        'cutlery-unit': '1 ₾ / pcs.',
+        'kbju-label': 'Nutrition values:',
+        'cal-label': 'kcal',
+        'p-label': 'p',
+        'f-label': 'f',
+        'c-label': 'c'
       }
     };
 
-    // Блюда для блока "Сегодня мы готовим" (ID начинается с 100)
     const todayFoodData = [
       {
         id: 101,
         type: 'today',
         title: { ru: 'Азиатский рис со свининой', en: 'Fried rice with pork' },
         desc: { ru: 'Жаренный рис со свининой и овощами в азиатском стиле.', en: 'Asian-style fried rice with pork and vegetables.' },
+        kbju: { calories: 520, protein: 22, fat: 18, carbs: 65 },
         price: 12,
         image: '../romul.ge/images/dishes/pork-rice.jpg'
       },
@@ -781,6 +844,7 @@
         type: 'today',
         title: { ru: 'Панини с курицей', en: 'Chicken panini' },
         desc: { ru: 'Домашняя пшеничная лепёшка со свежими овощами, курицей и сливочным сыром.', en: 'Homemade wheat tortilla with fresh vegetables, chicken and cream-cheese.' },
+        kbju: { calories: 450, protein: 28, fat: 14, carbs: 52 },
         price: 12,
         image: '../romul.ge/images/dishes/panini-chicken.jpg'
       },
@@ -789,6 +853,7 @@
         type: 'today',
         title: { ru: 'Тыквенный крем-суп с курицей', en: 'Pumpkin cream soup with chicken' },
         desc: { ru: 'Нежный и насыщенный крем суп из тыквы с обжаренным куриным филе.', en: 'Smooth texture creamy pumpkin soup with roasted chicken fillet.' },
+        kbju: { calories: 310, protein: 18, fat: 12, carbs: 30 },
         price: 12,
         image: '../romul.ge/images/dishes/pumpkin-cream-soup.jpg'
       },
@@ -797,6 +862,7 @@
         type: 'today',
         title: { ru: 'Фрикадельки в сливочном соусе с картофелем', en: 'Meatballs in cream sauce with potatoes' },
         desc: { ru: 'Мясные домашние фрикадельки в нежном сливочно-перечном соусе с молодым картофелем.', en: 'Homemade meatballs in creamy pepper souce with potatoes.' },
+        kbju: { calories: 580, protein: 26, fat: 28, carbs: 54 },
         price: 14,
         image: '../romul.ge/images/dishes/meatballs.jpeg'
       },
@@ -805,6 +871,7 @@
         type: 'today',
         title: { ru: 'Салат с пряной тыквой', en: 'Spicy pumpkin salad' },
         desc: { ru: 'Сочетание тыквы, моркови и свежего огурца в авторском кисло-сладком соусе и микс трав.', en: 'Pumpkin, carrot and cucumber mixed with a special sweet and sour sauce, topped with a mix of herbs.' },
+        kbju: { calories: 210, protein: 4, fat: 9, carbs: 28 },
         price: 10,
         image: '../romul.ge/images/dishes/spicy-pumpkin-salad.jpg'
       },
@@ -813,18 +880,19 @@
         type: 'today',
         title: { ru: 'Панкейки с заварным кремом', en: 'Pancake with custard' },
         desc: { ru: 'Домашние панкейки с заварным кремом из сгущенки и джемом из сезонных ягод.', en: 'Homemade pancakes with condenced milk custard and seasonal berry jam.' },
+        kbju: { calories: 420, protein: 8, fat: 10, carbs: 72 },
         price: 10,
         image: '../romul.ge/images/dishes/pancakes.jpg'
       }
     ]; 
 
-    // Блюда для блока "Предзаказ на завтра" (ID начинается с 200)
     const tomorrowFoodData = [
       {
         id: 201,
         type: 'tomorrow',
         title: { ru: 'Лобио с говядиной', en: 'Tender beef lobio' },
         desc: { ru: 'Нежная и насыщенная говядина томленая в красном вине с фасолью.', en: 'Tender and rich beef stewed in red wine with beans.' },
+        kbju: { calories: 490, protein: 32, fat: 15, carbs: 56 },
         price: 18,
         image: '../romul.ge/images/dishes/for-releasing.jpg'
       },
@@ -833,6 +901,7 @@
         type: 'tomorrow',
         title: { ru: 'Киш с курицей и грибами', en: 'Chicken mushroom pie' },
         desc: { ru: 'Нежное куриное филе, цветная капуста и грибы в сливочно-соевом соусе в корзинке из песочного теста.', en: 'Tender chicken fillet, cauliflower and mushroom with creamy and soy sauce in crispy shortcrust basket.' },
+        kbju: { calories: 510, protein: 24, fat: 22, carbs: 48 },
         price: 14,
         image: '../romul.ge/images/dishes/chicken-mushroom-pie.jpg'
       },
@@ -841,8 +910,9 @@
         type: 'tomorrow',
         title: { ru: 'Стейк из свинины в азиатском стиле с картофельными оладьями', en: 'Asian styled pork steak with potato pancakes' },
         desc: { ru: 'Нежная свинина в кисло-сладком соевом соусе с картофельными оладушками.', en: 'Tender pork in a sweet and sour soy sauce with potato pancakes.' },
+        kbju: { calories: 630, protein: 34, fat: 29, carbs: 58 },
         price: 16,
-        image: '../romul.ge/images/dishes/for-releasing.jpg'
+        image: '../romul.ge/images/dishes/pork-steak.jpg'
       }
     ];
 
@@ -850,49 +920,79 @@
     let cutleryToday = 0;
     let cutleryTomorrow = 0;
 
-    // Общий массив для поиска при добавлении в корзину
     const getAllFoodItems = () => [...todayFoodData, ...tomorrowFoodData];
 
     function checkSchedule() {
-      const today = new Date().getDay(); // 0 - Вс, 1 - Пн, 2 - Вт, 3 - Ср, 4 - Чт, 5 - Пт, 6 - Сб
-      
-      const todayHeader = document.getElementById('today-header');
-      const todayGrid = document.getElementById('today-food-grid');
-      const todayOffBanner = document.getElementById('today-off-banner');
+  const now = new Date();
+  const today = now.getDay(); // 0 = Воскресенье, 6 = Суббота
+  const hours = now.getHours();
 
-      const tomorrowHeader = document.getElementById('tomorrow-header');
-      const tomorrowGrid = document.getElementById('tomorrow-food-grid');
-      const tomorrowOffBanner = document.getElementById('tomorrow-off-banner');
+  const todayHeader = document.getElementById('today-header');
+  const todayGrid = document.getElementById('today-food-grid');
+  const todayOffBanner = document.getElementById('today-off-banner');
 
-      // 1. По субботам (6) и воскресеньям (0) меняем блок "Сегодня мы готовим"
-      if (today === 6 || today === 0) {
-        todayHeader.style.display = 'none';
-        todayGrid.style.display = 'none';
-        todayOffBanner.style.display = 'block';
-      } else {
-        todayHeader.style.display = 'block';
-        todayGrid.style.display = 'grid';
-        todayOffBanner.style.display = 'none';
-      }
+  const tomorrowHeader = document.getElementById('tomorrow-header');
+  const tomorrowGrid = document.getElementById('tomorrow-food-grid');
+  const tomorrowOffBanner = document.getElementById('tomorrow-off-banner');
 
-      // 2. Каждую пятницу (5), субботу (6) и воскресенье (0) меняем блок "Предзаказ на завтра"
-      if (today === 5 || today === 6 || today === 0) {
-        tomorrowHeader.style.display = 'none';
-        tomorrowGrid.style.display = 'none';
-        tomorrowOffBanner.style.display = 'block';
-      } else {
-        tomorrowHeader.style.display = 'block';
-        tomorrowGrid.style.display = 'grid';
-        tomorrowOffBanner.style.display = 'none';
-      }
+  // Выходной день (Суббота / Воскресенье)
+  if (today === 6 || today === 0) {
+    todayHeader.style.display = 'none';
+    todayGrid.style.display = 'none';
+    todayOffBanner.style.display = 'block';
+    todayOffBanner.innerText = translations[currentLang]['today-off-text'];
+  } else {
+    // Будний день: проверяем интервал с 09:00 до 15:00
+    if (hours >= 9 && hours < 15) {
+      todayHeader.style.display = 'block';
+      todayGrid.style.display = 'grid';
+      todayOffBanner.style.display = 'none';
+    } else {
+      todayHeader.style.display = 'none';
+      todayGrid.style.display = 'none';
+      todayOffBanner.style.display = 'block';
+      todayOffBanner.innerText = translations[currentLang]['today-off-time'];
     }
+  }
+
+  // Расписание предзаказа на завтра (Пятница, Суббота, Воскресенье)
+  if (today === 5 || today === 6 || today === 0) {
+    tomorrowHeader.style.display = 'none';
+    tomorrowGrid.style.display = 'none';
+    tomorrowOffBanner.style.display = 'block';
+  } else {
+    tomorrowHeader.style.display = 'block';
+    tomorrowGrid.style.display = 'grid';
+    tomorrowOffBanner.style.display = 'none';
+  }
+}
 
     function createCardHTML(item) {
+      const calLabel = translations[currentLang]['cal-label'];
+      const pLabel = translations[currentLang]['p-label'];
+      const fLabel = translations[currentLang]['f-label'];
+      const cLabel = translations[currentLang]['c-label'];
+
       return `
         <div class="card">
           <img src="${item.image}" alt="${item.title[currentLang]}">
           <div class="card-title">${item.title[currentLang]}</div>
-          <div class="card-desc">${item.desc[currentLang]}</div>
+          
+          <div class="desc-container">
+            <div class="desc-flipper">
+              <div class="card-desc">${item.desc[currentLang]}</div>
+              <div class="card-kbju">
+                <div class="kbju-title">${translations[currentLang]['kbju-label']}</div>
+                <div class="kbju-grid">
+                  <div>🔥 <b>${item.kbju.calories}</b> ${calLabel}</div>
+                  <div>🥩 <b>${item.kbju.protein}</b> ${pLabel}</div>
+                  <div>🧈 <b>${item.kbju.fat}</b> ${fLabel}</div>
+                  <div>🌾 <b>${item.kbju.carbs}</b> ${cLabel}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div class="card-footer">
             <div class="price">${item.price} ₾</div>
             <button class="add-btn" onclick="addToCart(${item.id})">${translations[currentLang]['add-btn']}</button>
@@ -1000,7 +1100,6 @@
         clearBtn.style.display = 'inline-block';
         let html = '';
 
-        // Отрисовка группы "Сегодня"
         if (todayItems.length > 0) {
           html += `<div class="cart-section-group">`;
           html += `<div class="cart-group-title">${translations[currentLang]['cart-today-group']}</div>`;
@@ -1036,7 +1135,6 @@
           html += `</div>`;
         }
 
-        // Отрисовка группы "Завтра"
         if (tomorrowItems.length > 0) {
           html += `<div class="cart-section-group">`;
           html += `<div class="cart-group-title">${translations[currentLang]['cart-tomorrow-group']}</div>`;
@@ -1075,7 +1173,6 @@
         itemsContainer.innerHTML = html;
       }
 
-      // Генерация текста заказа для Telegram
       let orderText = currentLang === 'ru' 
         ? `Привет, ROM’ÜL! Хочу заказать обед:\n` 
         : `Hi, ROM’ÜL! I would like to order lunch:\n`;
@@ -1137,54 +1234,88 @@
     }
 
     function initMap() {
-      const map = L.map('map').setView([41.7100, 44.8200], 11);
+  const map = L.map('map').setView([41.7100, 44.8200], 11);
 
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 18,
-        attribution: '© OpenStreetMap'
-      }).addTo(map);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 18,
+    attribution: '© OpenStreetMap'
+  }).addTo(map);
 
-      const tbilisiBounds = [
-        [41.7950, 44.7200],
-        [41.7800, 44.8300],
-        [41.7600, 44.8800],
-        [41.7100, 44.9100],
-        [41.6500, 44.8900],
-        [41.6300, 44.8100],
-        [41.6600, 44.7300],
-        [41.7100, 44.7000],
-        [41.7600, 44.7100]
-      ];
+  const tbilisiBounds = [
+  [41.7950, 44.7200],
+  [41.8050, 44.8100],
+  [41.7650, 44.8900],
+  [41.7000, 44.9200],
+  [41.6400, 44.9000],
+  [41.6200, 44.8300],
+  [41.6500, 44.7300],
+  [41.7000, 44.7000],
+  [41.7400, 44.7100],
+  [41.7700, 44.7050]
+];
 
-      L.polygon(tbilisiBounds, {
-        color: '#d4b843',
-        fillColor: '#f8e596',
-        fillOpacity: 0.35,
-        weight: 2
-      }).addTo(map).bindPopup('Желтая зона (Доставка по тарифу Яндекс Go)');
+L.polygon(tbilisiBounds, {
+  color: '#d4b843',
+  fillColor: '#f8e596',
+  fillOpacity: 0.35,
+  weight: 2
+}).addTo(map).bindPopup('Желтая зона (Доставка по тарифу Яндекс Go, Bolt)');
 
-      const samgoriWalkZone = [
-        [41.6930, 44.8510],
-        [41.6915, 44.8620],
-        [41.6880, 44.8670],
-        [41.6810, 44.8650],
-        [41.6780, 44.8570],
-        [41.6795, 44.8460],
-        [41.6860, 44.8430],
-        [41.6910, 44.8450]
-      ];
+  const samgoriWalkZone = [
+    [41.6930, 44.8510],
+    [41.6915, 44.8620],
+    [41.6880, 44.8670],
+    [41.6810, 44.8650],
+    [41.6780, 44.8570],
+    [41.6795, 44.8460],
+    [41.6860, 44.8430],
+    [41.6910, 44.8450]
+  ];
 
-      L.polygon(samgoriWalkZone, {
-        color: '#476834',
-        fillColor: '#5a8244',
-        fillOpacity: 0.5,
-        weight: 3
-      }).addTo(map).bindPopup('Зеленая зона (15 мин пешком от м. Самгори — Бесплатно)');
+  L.polygon(samgoriWalkZone, {
+    color: '#476834',
+    fillColor: '#5a8244',
+    fillOpacity: 0.5,
+    weight: 3
+  }).addTo(map).bindPopup('Зеленая зона (15 мин пешком от м. Самгори и любая другая станция метро — Бесплатно)');
 
-      L.marker([41.6853, 44.8550]).addTo(map)
-        .bindPopup('<b>Метро Самгори</b>')
-        .openPopup();
-    }
+  // Список всех станций метро Тбилиси
+  const metroStations = [
+    { name: "Театр Ахметели (Ahmeteli Theatre)", coords: [41.791787166336356, 44.815688021713136] },
+    { name: "Сараджишвили (Sarajishvili)", coords: [41.78365407705994, 44.79940697962435] },
+    { name: "Гурамишвили (Guramishvili)", coords: [41.775222386695766, 44.79514628204176] },
+    { name: "Грмагеле (Grmagele)", coords: [41.765564553212585, 44.79016815860227] },
+    { name: "Дидубе (Didube)", coords: [41.749520963474495, 44.77997747015367] },
+    { name: "Гоциридзе (Gotsiridze)", coords: [41.74300803892666, 44.78413672621661] },
+    { name: "Надзаладеви (Nadzaladevi)", coords: [41.73271908808647, 44.79689672621604] },
+    { name: "Вокзальная площадь (Station Square)", coords: [41.72203604943866, 44.7977059973804] },
+    { name: "Марджанишвили (Marjanishvili)", coords: [41.70989345523499, 44.797546826215246] },
+    { name: "Руставели (Rustaveli)", coords: [41.70426280170283, 44.789608183885385] },
+    { name: "Площадь Свободы (Liberty Square)", coords: [41.69481818431767, 44.80014626854436] },
+    { name: "Авлабари (Avlabari)", coords: [41.692665905683256, 44.81519156854433] },
+    { name: "300 Арагвинцев (300 Aragveli)", coords: [41.68803816416502, 44.827509368544156] },
+    { name: "Исани (Isani)", coords: [41.68665869138803, 44.84076328203852] },
+    { name: "Варкетили (Varketili)", coords: [41.69177583352086, 44.86991843970889] },
+    { name: "Проспект Церетели (Tsereteli)", coords: [41.727189507682056, 44.787778539710395] },
+    { name: "Технический Университет (Technical University)", coords: [41.72063046326155, 44.77650872621553] },
+    { name: "Медицинский Университет (Medical University)", coords: [41.727500075613406, 44.76501277179525] },
+    { name: "Делиси (Delisi)", coords: [41.72550380084405, 44.74458712784118] },
+    { name: "Важа-Пшавела (Vazha-Pshavela)", coords: [41.72389636566225, 44.7299279061824] },
+    { name: "Государственный Университет (State University)", coords: [41.722729653659506, 44.71731819628019] }
+  ];
+
+  // Добавление зеленых точек на карту
+  metroStations.forEach(station => {
+    L.circleMarker(station.coords, {
+      radius: 7,
+      fillColor: "#5a8244",
+      color: "#ffffff",
+      weight: 2,
+      opacity: 1,
+      fillOpacity: 0.9
+    }).addTo(map).bindPopup(`<b>м. ${station.name}</b><br>Бесплатная доставка`);
+  });
+}
 
     renderMenu();
     updateCartUI();
