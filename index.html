@@ -941,18 +941,6 @@
     todayGrid.style.display = 'none';
     todayOffBanner.style.display = 'block';
     todayOffBanner.innerText = translations[currentLang]['today-off-text'];
-  } else {
-    // Будний день: проверяем интервал с 09:00 до 15:00
-    if (hours >= 9 && hours < 16) {
-      todayHeader.style.display = 'block';
-      todayGrid.style.display = 'grid';
-      todayOffBanner.style.display = 'none';
-    } else {
-      todayHeader.style.display = 'none';
-      todayGrid.style.display = 'none';
-      todayOffBanner.style.display = 'block';
-      todayOffBanner.innerText = translations[currentLang]['today-off-time'];
-    }
   }
 
   // Расписание предзаказа на завтра (Пятница, Суббота, Воскресенье)
