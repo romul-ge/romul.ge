@@ -243,7 +243,7 @@
       margin-bottom: 10px;
     }
 
-    /* Исправленный флип-блок для описания и КБЖУ */
+    /* Флип-блок для описания и КБЖУ */
     .desc-container {
       perspective: 1000px;
       margin-bottom: 15px;
@@ -603,6 +603,476 @@
     .cat-container:hover .cat-eye-happy { opacity: 1; }
     .cat-container:hover .cat-mouth-normal { opacity: 0; }
     .cat-container:hover .cat-mouth-happy { opacity: 1; }
+
+    /* ==========================================================
+       Счётчик калорий (правая середина экрана)
+       ========================================================== */
+    .kcal-widget {
+      --zone: #6a9a4f;
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      align-items: center;
+      z-index: 1200;
+      pointer-events: none;
+      padding-right: env(safe-area-inset-right);
+      visibility: hidden;
+      transition: visibility 0s linear 0.5s;
+    }
+
+    .kcal-widget.is-visible {
+      visibility: visible;
+      transition-delay: 0s;
+    }
+
+    .kcal-anchor {
+      position: relative;
+      pointer-events: auto;
+    }
+
+    /* Плавное появление сбоку с лёгкой пружинкой */
+    .kcal-slide {
+      transform: translateX(115%);
+      transition: transform 0.4s ease-in;
+    }
+
+    .kcal-widget.is-visible .kcal-slide {
+      transform: none;
+      transition: transform 0.65s cubic-bezier(0.34, 1.35, 0.64, 1);
+    }
+
+    .kcal-pill {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: #fff;
+      color: var(--text-dark);
+      border: none;
+      border-left: 5px solid var(--zone);
+      border-radius: 18px 0 0 18px;
+      padding: 11px 16px 11px 13px;
+      cursor: pointer;
+      box-shadow: -4px 6px 22px rgba(0, 0, 0, 0.16);
+      transform-origin: 100% 50%;
+      transition: border-color 0.4s, box-shadow 0.25s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .kcal-pill:hover {
+      box-shadow: -6px 8px 26px rgba(0, 0, 0, 0.22);
+    }
+
+    .kcal-pill:focus-visible {
+      outline: 3px solid var(--primary-green);
+      outline-offset: 2px;
+    }
+
+    .kcal-pill::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    .kcal-pill.is-bump {
+      animation: kcalBump 0.5s ease-out;
+    }
+
+    .kcal-pill.is-bump::after {
+      animation: kcalRing 0.8s ease-out;
+    }
+
+    @keyframes kcalBump {
+      0%   { transform: scale(1); }
+      35%  { transform: scale(1.09); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes kcalRing {
+      0%   { opacity: 0.5; box-shadow: 0 0 0 0 var(--zone); }
+      100% { opacity: 0;   box-shadow: 0 0 0 14px var(--zone); }
+    }
+
+    .kcal-flame {
+      font-size: 1.15rem;
+      line-height: 1;
+    }
+
+    .kcal-num {
+      font-size: 1.25rem;
+      font-weight: 800;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .kcal-unit {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #6b665f;
+    }
+
+    /* «+496» — что именно добавилось */
+    .kcal-delta {
+      position: absolute;
+      right: 12px;
+      bottom: calc(100% + 6px);
+      background: var(--accent-yellow);
+      color: var(--text-dark);
+      font-size: 0.78rem;
+      font-weight: 800;
+      padding: 3px 9px;
+      border-radius: 10px;
+      pointer-events: none;
+      white-space: nowrap;
+      animation: kcalDelta 1.2s ease-out forwards;
+    }
+
+    .kcal-delta.neg {
+      background: #f3dcd8;
+      color: #a8382b;
+    }
+
+    @keyframes kcalDelta {
+      0%   { opacity: 0; transform: translateY(8px) scale(0.92); }
+      20%  { opacity: 1; transform: translateY(0) scale(1); }
+      70%  { opacity: 1; transform: translateY(-6px); }
+      100% { opacity: 0; transform: translateY(-16px); }
+    }
+
+    /* ---------- Подробная сводка ---------- */
+    .kcal-panel {
+      position: absolute;
+      top: 50%;
+      right: 100%;
+      padding-right: 14px; /* «мостик», чтобы курсор не терял наведение */
+      opacity: 0;
+      visibility: hidden;
+      transform: translate(12px, -50%);
+      transition: opacity 0.25s ease, transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1), visibility 0s linear 0.25s;
+    }
+
+    .kcal-card {
+      width: 296px;
+      max-height: calc(100vh - 24px);
+      overflow-y: auto;
+      background: #fff;
+      border-radius: 22px;
+      padding: 16px 18px 18px;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      box-shadow: 0 18px 48px rgba(0, 0, 0, 0.22);
+    }
+
+    .kcal-grip {
+      display: none;
+      width: 42px;
+      height: 4px;
+      border-radius: 2px;
+      background: #ddd;
+      margin: 0 auto 10px;
+    }
+
+    .kcal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .kcal-title {
+      font-size: 1rem;
+      font-weight: 800;
+    }
+
+    .kcal-close {
+      display: none;
+      width: 34px;
+      height: 34px;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      font-size: 1.7rem;
+      line-height: 1;
+      color: #666;
+      cursor: pointer;
+    }
+
+    /* Спидометр */
+    .kcal-gauge {
+      display: block;
+      width: 100%;
+      max-width: 300px;
+      height: auto;
+      margin: 2px auto 0;
+      overflow: visible;
+    }
+
+    .kcal-zone {
+      fill: none;
+      stroke-width: 18;
+      opacity: 0.32;
+      transition: opacity 0.4s;
+    }
+
+    .kcal-zone.is-active {
+      opacity: 1;
+    }
+
+    .kcal-tick {
+      stroke: #b9b2a8;
+      stroke-width: 1.2;
+    }
+
+    .kcal-tick.major {
+      stroke: #8d867b;
+      stroke-width: 2;
+    }
+
+    .kcal-gauge-label {
+      font-size: 9px;
+      font-weight: 700;
+      fill: #8a8378;
+    }
+
+    .kcal-needle {
+      transform-origin: 120px 124px;
+      transform: rotate(-120deg);
+      transition: transform 1s cubic-bezier(0.22, 1.2, 0.36, 1);
+      filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.25));
+    }
+
+    .kcal-gauge-val {
+      font-size: 26px;
+      font-weight: 800;
+      fill: var(--text-dark);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .kcal-gauge-unit {
+      font-size: 10px;
+      font-weight: 700;
+      fill: #8a8378;
+    }
+
+    .kcal-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: fit-content;
+      margin: 0 auto 14px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      background: #f4f1ec;
+      background: color-mix(in srgb, var(--zone) 16%, #fff);
+      transition: background 0.4s;
+    }
+
+    .kcal-status-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--zone);
+      transition: background 0.4s;
+    }
+
+    /* Белки / жиры / углеводы */
+    .kcal-macros {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .kcal-macro {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      padding: 9px 4px 8px;
+      text-align: center;
+      background: #fff8e1;
+      border: 1px solid #f3e5ab;
+      border-radius: 14px;
+    }
+
+    .kcal-macro-ico {
+      font-size: 1.1rem;
+      line-height: 1;
+    }
+
+    .kcal-macro-val {
+      font-size: 1.05rem;
+      font-weight: 800;
+      line-height: 1.2;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .kcal-macro-val small {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: #777;
+    }
+
+    .kcal-macro-name {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #666;
+    }
+
+    .kcal-balance {
+      margin-top: 14px;
+    }
+
+    .kcal-balance-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #666;
+      margin-bottom: 6px;
+    }
+
+    .kcal-bar {
+      display: flex;
+      height: 10px;
+      border-radius: 6px;
+      overflow: hidden;
+      background: #eee;
+    }
+
+    .kcal-seg {
+      height: 100%;
+      width: 0;
+      transition: width 0.7s cubic-bezier(0.3, 0.8, 0.3, 1);
+    }
+
+    .kcal-seg.p, .kcal-dot.p { background: #d9705a; }
+    .kcal-seg.f, .kcal-dot.f { background: #efc45a; }
+    .kcal-seg.c, .kcal-dot.c { background: #6b93c9; }
+
+    .kcal-legend {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #555;
+    }
+
+    .kcal-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 4px;
+    }
+
+    .kcal-note {
+      margin-top: 12px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: #888;
+      text-align: center;
+    }
+
+    .kcal-backdrop {
+      display: none;
+    }
+
+    /* Десктоп: сводка по наведению (и по фокусу с клавиатуры) */
+    @media (min-width: 769px) and (hover: hover) {
+      .kcal-anchor:hover .kcal-panel,
+      .kcal-anchor:has(.kcal-pill:focus-visible) .kcal-panel {
+        opacity: 1;
+        visibility: visible;
+        transform: translate(0, -50%);
+        transition-delay: 0s;
+      }
+    }
+
+    /* Мобильные и сенсорные экраны: компактная плашка + нижняя шторка по нажатию */
+    @media not all and (min-width: 769px) and (hover: hover) {
+      .kcal-pill {
+        flex-direction: column;
+        gap: 2px;
+        min-width: 54px;
+        padding: 8px 8px 8px 9px;
+        border-left-width: 4px;
+        border-radius: 16px 0 0 16px;
+      }
+
+      .kcal-flame { font-size: 1rem; }
+      .kcal-num   { font-size: 1.05rem; }
+      .kcal-unit  { font-size: 0.62rem; }
+
+      .kcal-delta { right: 8px; }
+
+      .kcal-backdrop {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(30, 25, 20, 0.4);
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: auto;
+        transition: opacity 0.3s, visibility 0s linear 0.3s;
+      }
+
+      .kcal-widget.open .kcal-backdrop {
+        opacity: 1;
+        visibility: visible;
+        transition-delay: 0s;
+      }
+
+      .kcal-panel {
+        position: fixed;
+        top: auto;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        padding: 0;
+        opacity: 1;
+        transform: translateY(105%);
+        transition: transform 0.38s cubic-bezier(0.2, 0.9, 0.3, 1), visibility 0s linear 0.38s;
+      }
+
+      .kcal-widget.open .kcal-panel {
+        visibility: visible;
+        transform: none;
+        transition-delay: 0s;
+      }
+
+      .kcal-card {
+        width: 100%;
+        max-height: 86vh;
+        border-radius: 24px 24px 0 0;
+        padding: 10px 20px calc(20px + env(safe-area-inset-bottom));
+      }
+
+      .kcal-grip  { display: block; }
+      .kcal-close { display: flex; }
+      .kcal-gauge { max-width: 320px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .kcal-slide,
+      .kcal-widget.is-visible .kcal-slide,
+      .kcal-panel,
+      .kcal-needle,
+      .kcal-seg,
+      .kcal-backdrop {
+        transition-duration: 0.01s;
+      }
+
+      .kcal-pill.is-bump,
+      .kcal-pill.is-bump::after,
+      .kcal-delta {
+        animation: none;
+      }
+    }
   </style>
 </head>
 <body>
@@ -632,12 +1102,37 @@
   </div>
 
   <main class="container">
-    <!-- Block 1: Сегодня мы готовим -->
+    <!-- Block 1: Горячее -->
     <section class="menu-section" id="today-section">
       <div class="section-header" id="today-header">
-        <h2 class="section-title" data-key="today-title">Сегодня мы готовим</h2>
+        <h2 class="section-title" data-key="today-title">Горячее и сытное - 350гр.:</h2>
       </div>
       <div class="grid" id="today-food-grid"></div>
+    </section>
+
+    <!-- Block 1.1: Супы -->
+    <section class="menu-section" id="soups-section">
+      <div class="section-header" id="soups-header">
+        <h2 class="section-title" data-key="soups-title">Суп - всему голова - 350гр.:</h2>
+      </div>
+      <div class="grid" id="soups-food-grid"></div>
+    </section>
+
+    <!-- Block 1.2: Салаты -->
+    <section class="menu-section" id="salads-section">
+      <div class="section-header" id="salads-header">
+        <h2 class="section-title" data-key="salads-title">Салаты и холодные закуски - 200гр.:</h2>
+      </div>
+      <div class="grid" id="salads-food-grid"></div>
+    </section>
+
+    <!-- Block 1.3: Десерты -->
+    <section class="menu-section" id="desserts-section">
+      <div class="section-header" id="desserts-header">
+        <h2 class="section-title" data-key="desserts-title">Сладкое и идеи для завтрака - 180гр.:</h2>
+      </div>
+      <div class="grid" id="desserts-food-grid"></div>
+
       <h2 class="day-off-banner" id="today-off-banner" style="display: none;" data-key="today-off-text">
         Сегодня мы отдыхаем и придумываем новые позиции для вас!
       </h2>
@@ -647,7 +1142,6 @@
     <section class="menu-section" id="tomorrow-section">
       <div class="section-header" id="tomorrow-header">
         <h2 class="section-title" data-key="tomorrow-title">Предзаказ на завтра</h2>
-        <p class="section-subtitle" data-key="tomorrow-sub">Доставим завтра с 12:00 до 15:00</p>
       </div>
       <div class="grid" id="tomorrow-food-grid"></div>
       <h2 class="day-off-banner" id="tomorrow-off-banner" style="display: none;" data-key="tomorrow-off-text">
@@ -703,6 +1197,84 @@
 
       <div class="checkout-btns">
         <a id="tg-checkout" href="#" target="_blank" class="btn-tg" data-key="btn-tg">Заказать через Telegram</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Счётчик калорий: справа по центру экрана -->
+  <div class="kcal-widget" id="kcal-widget">
+    <div class="kcal-backdrop" id="kcal-backdrop"></div>
+
+    <div class="kcal-anchor" id="kcal-anchor">
+      <div class="kcal-slide">
+        <button type="button" class="kcal-pill" id="kcal-pill" aria-expanded="false" aria-controls="kcal-panel">
+          <span class="kcal-flame" aria-hidden="true">🔥</span>
+          <span class="kcal-num" id="kcal-num">0</span>
+          <span class="kcal-unit" data-key="cal-label">ккал</span>
+        </button>
+      </div>
+
+      <div class="kcal-panel" id="kcal-panel" role="dialog">
+        <div class="kcal-card">
+          <div class="kcal-grip" aria-hidden="true"></div>
+
+          <div class="kcal-head">
+            <h4 class="kcal-title" data-key="kcal-title">Ваш рацион</h4>
+            <button type="button" class="kcal-close" id="kcal-close">&times;</button>
+          </div>
+
+          <svg class="kcal-gauge" viewBox="0 0 240 190" role="img" id="kcal-gauge">
+            <g id="kcal-zones"></g>
+            <g id="kcal-ticks"></g>
+            <g id="kcal-labels"></g>
+            <g class="kcal-needle" id="kcal-needle">
+              <polygon points="117.5,124 120,46 122.5,124 121.5,135 118.5,135" fill="#2c2926"/>
+            </g>
+            <circle cx="120" cy="124" r="9" fill="#2c2926"/>
+            <circle cx="120" cy="124" r="3.5" fill="#fff"/>
+            <text class="kcal-gauge-val" id="kcal-gauge-val" x="120" y="160" text-anchor="middle">0</text>
+            <text class="kcal-gauge-unit" id="kcal-gauge-unit" x="120" y="175" text-anchor="middle">ккал</text>
+          </svg>
+
+          <div class="kcal-status">
+            <span class="kcal-status-dot"></span>
+            <span id="kcal-status-text">Похудение</span>
+          </div>
+
+          <div class="kcal-macros">
+            <div class="kcal-macro">
+              <span class="kcal-macro-ico" aria-hidden="true">🥩</span>
+              <span class="kcal-macro-val"><span id="kcal-p">0</span> <small data-key="kcal-g">г</small></span>
+              <span class="kcal-macro-name" data-key="kcal-protein">Белки</span>
+            </div>
+            <div class="kcal-macro">
+              <span class="kcal-macro-ico" aria-hidden="true">🧈</span>
+              <span class="kcal-macro-val"><span id="kcal-f">0</span> <small data-key="kcal-g">г</small></span>
+              <span class="kcal-macro-name" data-key="kcal-fat">Жиры</span>
+            </div>
+            <div class="kcal-macro">
+              <span class="kcal-macro-ico" aria-hidden="true">🌾</span>
+              <span class="kcal-macro-val"><span id="kcal-c">0</span> <small data-key="kcal-g">г</small></span>
+              <span class="kcal-macro-name" data-key="kcal-carbs">Углеводы</span>
+            </div>
+          </div>
+
+          <div class="kcal-balance">
+            <div class="kcal-balance-title" data-key="kcal-balance">Баланс БЖУ по калориям</div>
+            <div class="kcal-bar">
+              <span class="kcal-seg p" id="kcal-seg-p"></span>
+              <span class="kcal-seg f" id="kcal-seg-f"></span>
+              <span class="kcal-seg c" id="kcal-seg-c"></span>
+            </div>
+            <div class="kcal-legend">
+              <span><i class="kcal-dot p"></i><span data-key="p-label">б</span> <b id="kcal-pct-p">0%</b></span>
+              <span><i class="kcal-dot f"></i><span data-key="f-label">ж</span> <b id="kcal-pct-f">0%</b></span>
+              <span><i class="kcal-dot c"></i><span data-key="c-label">у</span> <b id="kcal-pct-c">0%</b></span>
+            </div>
+          </div>
+
+          <div class="kcal-note" data-key="kcal-note">Сумма по всем блюдам в корзине</div>
+        </div>
       </div>
     </div>
   </div>
@@ -766,11 +1338,12 @@
         'hero-title': 'Домашние обеды в Тбилиси',
         'hero-sub': 'Регулярные обновления меню. Готовим с любовью и заботой!',
         'promo-text': '🎁 При заказе от 3-х блюд скидка 10% на всю корзину!',
-        'today-title': 'Сегодня мы готовим',
-        'today-sub': 'Обед будет у вас в течении 2-х часов',
+        'today-title': 'Горячее и сытное - 350гр.:',
+        'soups-title': 'Суп - всему голова - 350гр.:',
+        'salads-title': 'Салаты и холодные закуски - 200гр.:',
+        'desserts-title': 'Сладкое и идеи для завтрака - 180гр.:',
         'today-off-text': 'Сегодня мы отдыхаем и придумываем новые позиции для вас!',
         'tomorrow-title': 'Предзаказ на завтра',
-        'tomorrow-sub': 'Доставим завтра с 12:00 до 15:00',
         'tomorrow-off-text': 'Предзаказ станет доступен в понедельник',
         'delivery-title': 'Как мы доставляем',
         'delivery-zones': '🚚 Зелёная зона и любые станции метро — доставка бесплатная. Жёлтая зона — доставка по тарифу Яндекс Go, Bolt.',
@@ -787,22 +1360,35 @@
         'cart-today-group': '🚀 Приедет сегодня',
         'cart-tomorrow-group': '📅 Приедет завтра',
         'cutlery-title': '🍴 Приборы (комплект)',
-        'cutlery-unit': '1 ₾ / шт.',
+        'cutlery-unit': '2 ₾ / шт.',
         'kbju-label': 'Пищевая ценность:',
         'cal-label': 'ккал',
         'p-label': 'б',
         'f-label': 'ж',
-        'c-label': 'у'
+        'c-label': 'у',
+        'kcal-title': 'Ваш рацион',
+        'kcal-protein': 'Белки',
+        'kcal-fat': 'Жиры',
+        'kcal-carbs': 'Углеводы',
+        'kcal-g': 'г',
+        'kcal-balance': 'Баланс БЖУ по калориям',
+        'kcal-note': 'Сумма по всем блюдам в корзине',
+        'kcal-status-green': 'Похудение',
+        'kcal-status-yellow': 'Норма',
+        'kcal-status-red': 'Перебор',
+        'kcal-open': 'Пищевая ценность заказа',
+        'kcal-close': 'Закрыть'
       },
       en: {
         'hero-title': 'Homemade Lunches in Tbilisi',
         'hero-sub': 'Regular menu updates. Cooked with love and care!',
         'promo-text': '🎁 Order 3 or more meals and get 10% off your entire cart!',
-        'today-title': 'Cooking Today',
-        'today-sub': 'Lunch will arrive within 2 hours',
+        'today-title': 'Mains & Hot Dishes - 350g.:',
+        'soups-title': 'Soups – Hearty & Comforting - 350g.:',
+        'salads-title': 'Salads & Cold Appetizers - 200g.:',
+        'desserts-title': 'Desserts & Breakfast - 180g.:',
         'today-off-text': 'Today we are resting and creating new dishes for you!',
         'tomorrow-title': 'Pre-order for Tomorrow',
-        'tomorrow-sub': 'Delivery tomorrow from 12:00 to 15:00',
         'tomorrow-off-text': 'Pre-orders will be available on Monday',
         'delivery-title': 'How We Deliver',
         'delivery-zones': '🚚 Green zone and any metro stations — free delivery. Yellow zone — Yandex Go fare delivery.',
@@ -819,12 +1405,24 @@
         'cart-today-group': '🚀 Arriving today',
         'cart-tomorrow-group': '📅 Arriving tomorrow',
         'cutlery-title': '🍴 Cutlery (set)',
-        'cutlery-unit': '1 ₾ / pcs.',
+        'cutlery-unit': '2 ₾ / pcs.',
         'kbju-label': 'Nutrition values:',
         'cal-label': 'kcal',
         'p-label': 'p',
         'f-label': 'f',
-        'c-label': 'c'
+        'c-label': 'c',
+        'kcal-title': 'Your meal',
+        'kcal-protein': 'Protein',
+        'kcal-fat': 'Fat',
+        'kcal-carbs': 'Carbs',
+        'kcal-g': 'g',
+        'kcal-balance': 'Macro split by calories',
+        'kcal-note': 'Total for all dishes in your cart',
+        'kcal-status-green': 'Weight loss',
+        'kcal-status-yellow': 'Normal',
+        'kcal-status-red': 'Too much',
+        'kcal-open': 'Order nutrition details',
+        'kcal-close': 'Close'
       }
     };
 
@@ -832,10 +1430,10 @@
       {
         id: 101,
         type: 'today',
-        title: { ru: 'Азиатский рис со свининой', en: 'Fried rice with pork' },
-        desc: { ru: 'Жаренный рис со свининой и овощами в азиатском стиле.', en: 'Asian-style fried rice with pork and vegetables.' },
+        title: { ru: 'Азиатский рис с курицей', en: 'Fried rice with chicken' },
+        desc: { ru: 'Жаренный рис с курицей и овощами в азиатском стиле.', en: 'Asian-style fried rice with chicken and vegetables.' },
         kbju: { calories: 496, protein: 24.2, fat: 19, carbs: 53.9 },
-        price: 12,
+        price: 14,
         image: '../romul.ge/images/dishes/pork-rice.jpg'
       },
       {
@@ -850,11 +1448,128 @@
       {
         id: 103,
         type: 'today',
+        title: { ru: 'Стейк из свинины в азиатском стиле с картофельными оладьями', en: 'Asian styled pork steak with potato pancakes' },
+        desc: { ru: 'Нежная свинина в кисло-сладком соевом соусе с картофельными оладушками.', en: 'Tender pork in a sweet and sour soy sauce with potato pancakes.' },
+        kbju: { calories: 630, protein: 34.8, fat: 29.1, carbs: 56.2 },
+        price: 16,
+        image: '../romul.ge/images/dishes/pork-steak.jpg'
+      }
+    ];
+
+    const soupsFoodData = [
+      {
+        id: 301,
+        type: 'today',
+        title: { ru: 'Тыквенный крем-суп', en: 'Pumpkin cream soup' },
+        desc: { ru: 'Нежный и насыщенный суп из тыквы с курицей и кахетинским маслом.', en: 'Silky and rich pumpkin soup with chicken and Kakhetian sunflower oil.' },
+        kbju: { calories: 377, protein: 16.5, fat: 29.6, carbs: 40.1 },
+        price: 12,
+        image: '../romul.ge/images/dishes/pumpkin-cream-soup.jpg'
+      },
+      {
+        id: 302,
+        type: 'today',
+        title: { ru: 'Борщ с говядиной', en: 'Borsch with tender beef' },
+        desc: { ru: 'Насыщенный борщ с нежной говядиной.', en: 'Rich borsch with tender beef.' },
+        kbju: { calories: 230, protein: 14.6, fat: 6.7, carbs: 20.3 },
+        price: 14,
+        image: '../romul.ge/images/dishes/borsch-beef.jpeg'
+      },
+      {
+        id: 303,
+        type: 'today',
+        title: { ru: 'Сливочный суп с окунем и ньокками', en: 'Creamy perch soup with gnocchi' },
+        desc: { ru: 'Нежный и сливочный суп с окунем, стручковой фасолью и домашними картофельными ньокками.', en: 'Silky and creamy perch soup with green beans and homemade potato gnocchi.' },
+        kbju: { calories: 295, protein: 12.4, fat: 16.3, carbs: 23.6 },
+        price: 14,
+        image: '../romul.ge/images/dishes/creamy-soup.jpeg'
+      }
+    ];
+
+    const saladsFoodData = [
+      {
+        id: 401,
+        type: 'today',
+        title: { ru: 'Салат с пряной тыквой', en: 'Salad with spicy pumpkin' },
+        desc: { ru: 'Тыква, огурец и микс зелени с пряной заправкой.', en: 'Pumpkin, cucumber, and mixed greens with a spicy dressing.' },
+        kbju: { calories: 185, protein: 2.3, fat: 15.6, carbs: 10.5 },
+        price: 10,
+        image: '../romul.ge/images/dishes/spicy-pumpkin-salad.jpg'
+      },
+      {
+        id: 402,
+        type: 'today',
+        title: { ru: 'Салат с печеной свеклой', en: 'Salad with backed beets' },
+        desc: { ru: 'Печеная свекла, нежный сыр и микс зелени с подсолнечными семечками.', en: 'Roasted beets, creamy cheese, and mixed greens with sunflower seeds.' },
+        kbju: { calories: 294, protein: 10.1, fat: 23.5, carbs: 11.5 },
+        price: 12,
+        image: '../romul.ge/images/dishes/beets-salad.jpeg'
+      },
+      {
+        id: 403,
+        type: 'today',
+        title: { ru: 'Баба гануш', en: 'Baba ghanoush' },
+        desc: { ru: 'Запеченый целиком баклажан с начинкой из томатов, чеснока и перца.', en: 'Whole roasted eggplant stuffed with tomatoes, garlic, and peppers.' },
+        kbju: { calories: 97, protein: 2.1, fat: 5.3, carbs: 11.8 },
+        price: 10,
+        image: '../romul.ge/images/dishes/baba-ganush.jpeg'
+      },
+      {
+        id: 404,
+        type: 'today',
+        title: { ru: 'Салат с томатом и фасолью', en: 'Fresh salad with tomatoes and green beans' },
+        desc: { ru: 'Томаты, свежая стручковая фасоль, красный лук с бальзамическим уксусом.', en: 'Tomatoes, fresh green beans, and red onion dressed with balsamic vinegar.' },
+        kbju: { calories: 97, protein: 2.4, fat: 5.3, carbs: 11.6 },
+        price: 10,
+        image: '../romul.ge/images/dishes/fresh-salad.jpeg'
+      },
+      {
+        id: 405,
+        type: 'today',
+        title: { ru: 'Кабачковые оладьи со сметаной', en: 'Zucchini fritters with sour cream' },
+        desc: { ru: 'Домашние, нежные кабачковые оладьи со сметаной и черным перцем.', en: 'Tender homemade zucchini fritters served with sour cream and freshly cracked black pepper.' },
+        kbju: { calories: 294, protein: 15.2, fat: 23.5, carbs: 12.7 },
+        price: 12,
+        image: '../romul.ge/images/dishes/for-releasing.jpg'
+      },
+      {
+        id: 406,
+        type: 'today',
+        title: { ru: 'Салат, похожий на греческий', en: 'Greek-styled salad' },
+        desc: { ru: 'Знакомое сочетание сыра фета, красного лука и маринованных оливок с миксом зелени.', en: 'A familiar combination of feta cheese and marinated olives with mixed greens.' },
+        kbju: { calories: 272, protein: 8.8, fat: 23.4, carbs: 8.1 },
+        price: 12,
+        image: '../romul.ge/images/dishes/for-releasing.jpg'
+      }
+    ];
+
+    const dessertsFoodData = [
+      {
+        id: 501,
+        type: 'today',
         title: { ru: 'Панкейки с заварным кремом', en: 'Pancake with custard' },
         desc: { ru: 'Домашние панкейки с заварным кремом из сгущенки и джемом из сезонных ягод.', en: 'Homemade pancakes with condenced milk custard and seasonal berry jam.' },
         kbju: { calories: 500, protein: 10.5, fat: 22.5, carbs: 66 },
         price: 10,
         image: '../romul.ge/images/dishes/pancakes.jpg'
+      },
+      {
+        id: 502,
+        type: 'today',
+        title: { ru: 'Сырники с карамелью и орехами', en: 'Syrniki with Caramel and Toasted Nuts' },
+        desc: { ru: 'Нежные сырники с заварным кремом, карамельным соусом и орешками.', en: 'Tender cottage cheese pancakes with pastry cream, caramel sauce, and nuts.' },
+        kbju: { calories: 441, protein: 20.1, fat: 22.9, carbs: 41.4 },
+        price: 12,
+        image: '../romul.ge/images/dishes/for-releasing.jpg'
+      },
+      {
+        id: 503,
+        type: 'today',
+        title: { ru: 'Сливочные блинчики', en: 'Rich creamy crepes' },
+        desc: { ru: 'Домашние блинчики на сливочном масле с сахарной пудрой.', en: 'Homemade crepes brushed with melted butter and dusted with powdered sugar.' },
+        kbju: { calories: 440, protein: 9.7, fat: 25.1, carbs: 45.3 },
+        price: 10,
+        image: '../romul.ge/images/dishes/for-releasing.jpg'
       }
     ]; 
 
@@ -874,7 +1589,7 @@
         title: { ru: 'Киш с курицей и грибами', en: 'Chicken mushroom pie' },
         desc: { ru: 'Нежное куриное филе, цветная капуста и грибы в сливочно-соевом соусе в корзинке из песочного теста.', en: 'Tender chicken fillet, cauliflower and mushroom with creamy and soy sauce in crispy shortcrust basket.' },
         kbju: { calories: 680, protein: 31.1, fat: 37.6, carbs: 55.5 },
-        price: 14,
+        price: 16,
         image: '../romul.ge/images/dishes/chicken-mushroom-pie.jpg'
       },
       {
@@ -884,7 +1599,7 @@
         desc: { ru: 'Нежная свинина в кисло-сладком соевом соусе с картофельными оладушками.', en: 'Tender pork in a sweet and sour soy sauce with potato pancakes.' },
         kbju: { calories: 630, protein: 34.8, fat: 29.1, carbs: 56.2 },
         price: 16,
-        image: '../romul.ge/images/dishes/pork-steak.jpg'
+        image: '../romul.ge/images/dishes/for-releasing.jpg'
       }
     ];
 
@@ -892,40 +1607,43 @@
     let cutleryToday = 0;
     let cutleryTomorrow = 0;
 
-    const getAllFoodItems = () => [...todayFoodData, ...tomorrowFoodData];
+    const getAllFoodItems = () => [
+      ...todayFoodData,
+      ...soupsFoodData,
+      ...saladsFoodData,
+      ...dessertsFoodData,
+      ...tomorrowFoodData
+    ];
 
     function checkSchedule() {
-  const now = new Date();
-  const today = now.getDay(); // 0 = Воскресенье, 6 = Суббота
-  const hours = now.getHours();
+      const now = new Date();
+      const today = now.getDay(); // 0 = Воскресенье, 6 = Суббота
 
-  const todayHeader = document.getElementById('today-header');
-  const todayGrid = document.getElementById('today-food-grid');
-  const todayOffBanner = document.getElementById('today-off-banner');
+      const todayHeader = document.getElementById('today-header');
+      const todayGrid = document.getElementById('today-food-grid');
+      const soupsSection = document.getElementById('soups-section');
+      const saladsSection = document.getElementById('salads-section');
+      const dessertsSection = document.getElementById('desserts-section');
+      const todayOffBanner = document.getElementById('today-off-banner');
 
-  const tomorrowHeader = document.getElementById('tomorrow-header');
-  const tomorrowGrid = document.getElementById('tomorrow-food-grid');
-  const tomorrowOffBanner = document.getElementById('tomorrow-off-banner');
+      const tomorrowHeader = document.getElementById('tomorrow-header');
+      const tomorrowGrid = document.getElementById('tomorrow-food-grid');
+      const tomorrowOffBanner = document.getElementById('tomorrow-off-banner');
 
-  // Выходной день (Суббота / Воскресенье)
-  if (today === 6 || today === 0) {
-    todayHeader.style.display = 'none';
-    todayGrid.style.display = 'none';
-    todayOffBanner.style.display = 'block';
-    todayOffBanner.innerText = translations[currentLang]['today-off-text'];
-  }
+      // Выходной день (Суббота / Воскресенье)
+      
 
-  // Расписание предзаказа на завтра (Пятница, Суббота, Воскресенье)
-  if (today === 5 || today === 6 || today === 0) {
-    tomorrowHeader.style.display = 'none';
-    tomorrowGrid.style.display = 'none';
-    tomorrowOffBanner.style.display = 'block';
-  } else {
-    tomorrowHeader.style.display = 'block';
-    tomorrowGrid.style.display = 'grid';
-    tomorrowOffBanner.style.display = 'none';
-  }
-}
+      // Расписание предзаказа на завтра (Пятница, Суббота, Воскресенье)
+      if (today === 5 || today === 6 || today === 0) {
+        if (tomorrowHeader) tomorrowHeader.style.display = 'none';
+        if (tomorrowGrid) tomorrowGrid.style.display = 'none';
+        if (tomorrowOffBanner) tomorrowOffBanner.style.display = 'block';
+      } else {
+        if (tomorrowHeader) tomorrowHeader.style.display = 'block';
+        if (tomorrowGrid) tomorrowGrid.style.display = 'grid';
+        if (tomorrowOffBanner) tomorrowOffBanner.style.display = 'none';
+      }
+    }
 
     function createCardHTML(item) {
       const calLabel = translations[currentLang]['cal-label'];
@@ -963,10 +1681,16 @@
 
     function renderMenu() {
       const todayGrid = document.getElementById('today-food-grid');
+      const soupsGrid = document.getElementById('soups-food-grid');
+      const saladsGrid = document.getElementById('salads-food-grid');
+      const dessertsGrid = document.getElementById('desserts-food-grid');
       const tomorrowGrid = document.getElementById('tomorrow-food-grid');
 
-      todayGrid.innerHTML = todayFoodData.map(item => createCardHTML(item)).join('');
-      tomorrowGrid.innerHTML = tomorrowFoodData.map(item => createCardHTML(item)).join('');
+      if (todayGrid) todayGrid.innerHTML = todayFoodData.map(item => createCardHTML(item)).join('');
+      if (soupsGrid) soupsGrid.innerHTML = soupsFoodData.map(item => createCardHTML(item)).join('');
+      if (saladsGrid) saladsGrid.innerHTML = saladsFoodData.map(item => createCardHTML(item)).join('');
+      if (dessertsGrid) dessertsGrid.innerHTML = dessertsFoodData.map(item => createCardHTML(item)).join('');
+      if (tomorrowGrid) tomorrowGrid.innerHTML = tomorrowFoodData.map(item => createCardHTML(item)).join('');
       
       checkSchedule();
     }
@@ -1168,6 +1892,8 @@
       }
 
       document.getElementById('tg-checkout').href = `https://t.me/roman_romul?text=${encodeURIComponent(orderText)}`;
+
+      updateKcalWidget();
     }
 
     function openCart() {
@@ -1194,88 +1920,364 @@
     }
 
     function initMap() {
-  const map = L.map('map').setView([41.7100, 44.8200], 11);
+      const map = L.map('map').setView([41.7100, 44.8200], 11);
 
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 18,
-    attribution: '© OpenStreetMap'
-  }).addTo(map);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: '© OpenStreetMap'
+      }).addTo(map);
 
-  const tbilisiBounds = [
-  [41.7950, 44.7200],
-  [41.8050, 44.8100],
-  [41.7650, 44.8900],
-  [41.7000, 44.9200],
-  [41.6400, 44.9000],
-  [41.6200, 44.8300],
-  [41.6500, 44.7300],
-  [41.7000, 44.7000],
-  [41.7400, 44.7100],
-  [41.7700, 44.7050]
-];
+      const tbilisiBounds = [
+        [41.7950, 44.7200],
+        [41.8050, 44.8100],
+        [41.7650, 44.8900],
+        [41.7000, 44.9200],
+        [41.6400, 44.9000],
+        [41.6200, 44.8300],
+        [41.6500, 44.7300],
+        [41.7000, 44.7000],
+        [41.7400, 44.7100],
+        [41.7700, 44.7050]
+      ];
 
-L.polygon(tbilisiBounds, {
-  color: '#d4b843',
-  fillColor: '#f8e596',
-  fillOpacity: 0.35,
-  weight: 2
-}).addTo(map).bindPopup('Желтая зона (Доставка по тарифу Яндекс Go, Bolt)');
+      L.polygon(tbilisiBounds, {
+        color: '#d4b843',
+        fillColor: '#f8e596',
+        fillOpacity: 0.35,
+        weight: 2
+      }).addTo(map).bindPopup('Желтая зона (Доставка по тарифу Яндекс Go, Bolt)');
 
-  const samgoriWalkZone = [
-    [41.6930, 44.8510],
-    [41.6915, 44.8620],
-    [41.6880, 44.8670],
-    [41.6810, 44.8650],
-    [41.6780, 44.8570],
-    [41.6795, 44.8460],
-    [41.6860, 44.8430],
-    [41.6910, 44.8450]
-  ];
+      const samgoriWalkZone = [
+        [41.6930, 44.8510],
+        [41.6915, 44.8620],
+        [41.6880, 44.8670],
+        [41.6810, 44.8650],
+        [41.6780, 44.8570],
+        [41.6795, 44.8460],
+        [41.6860, 44.8430],
+        [41.6910, 44.8450]
+      ];
 
-  L.polygon(samgoriWalkZone, {
-    color: '#476834',
-    fillColor: '#5a8244',
-    fillOpacity: 0.5,
-    weight: 3
-  }).addTo(map).bindPopup('Зеленая зона (15 мин пешком от м. Самгори и любая другая станция метро — Бесплатно)');
+      L.polygon(samgoriWalkZone, {
+        color: '#476834',
+        fillColor: '#5a8244',
+        fillOpacity: 0.5,
+        weight: 3
+      }).addTo(map).bindPopup('Зеленая зона (15 мин пешком от м. Самгори и любая другая станция метро — Бесплатно)');
 
-  // Список всех станций метро Тбилиси
-  const metroStations = [
-    { name: "Театр Ахметели (Ahmeteli Theatre)", coords: [41.791787166336356, 44.815688021713136] },
-    { name: "Сараджишвили (Sarajishvili)", coords: [41.78365407705994, 44.79940697962435] },
-    { name: "Гурамишвили (Guramishvili)", coords: [41.775222386695766, 44.79514628204176] },
-    { name: "Грмагеле (Grmagele)", coords: [41.765564553212585, 44.79016815860227] },
-    { name: "Дидубе (Didube)", coords: [41.749520963474495, 44.77997747015367] },
-    { name: "Гоциридзе (Gotsiridze)", coords: [41.74300803892666, 44.78413672621661] },
-    { name: "Надзаладеви (Nadzaladevi)", coords: [41.73271908808647, 44.79689672621604] },
-    { name: "Вокзальная площадь (Station Square)", coords: [41.72203604943866, 44.7977059973804] },
-    { name: "Марджанишвили (Marjanishvili)", coords: [41.70989345523499, 44.797546826215246] },
-    { name: "Руставели (Rustaveli)", coords: [41.70426280170283, 44.789608183885385] },
-    { name: "Площадь Свободы (Liberty Square)", coords: [41.69481818431767, 44.80014626854436] },
-    { name: "Авлабари (Avlabari)", coords: [41.692665905683256, 44.81519156854433] },
-    { name: "300 Арагвинцев (300 Aragveli)", coords: [41.68803816416502, 44.827509368544156] },
-    { name: "Исани (Isani)", coords: [41.68665869138803, 44.84076328203852] },
-    { name: "Варкетили (Varketili)", coords: [41.69177583352086, 44.86991843970889] },
-    { name: "Проспект Церетели (Tsereteli)", coords: [41.727189507682056, 44.787778539710395] },
-    { name: "Технический Университет (Technical University)", coords: [41.72063046326155, 44.77650872621553] },
-    { name: "Медицинский Университет (Medical University)", coords: [41.727500075613406, 44.76501277179525] },
-    { name: "Делиси (Delisi)", coords: [41.72550380084405, 44.74458712784118] },
-    { name: "Важа-Пшавела (Vazha-Pshavela)", coords: [41.72389636566225, 44.7299279061824] },
-    { name: "Государственный Университет (State University)", coords: [41.722729653659506, 44.71731819628019] }
-  ];
+      // Список всех станций метро Тбилиси
+      const metroStations = [
+        { name: "Театр Ахметели (Ahmeteli Theatre)", coords: [41.791787166336356, 44.815688021713136] },
+        { name: "Сараджишвили (Sarajishvili)", coords: [41.78365407705994, 44.79940697962435] },
+        { name: "Гурамишвили (Guramishvili)", coords: [41.775222386695766, 44.79514628204176] },
+        { name: "Грмагеле (Grmagele)", coords: [41.765564553212585, 44.79016815860227] },
+        { name: "Дидубе (Didube)", coords: [41.749520963474495, 44.77997747015367] },
+        { name: "Гоциридзе (Gotsiridze)", coords: [41.74300803892666, 44.78413672621661] },
+        { name: "Надзаладеви (Nadzaladevi)", coords: [41.73271908808647, 44.79689672621604] },
+        { name: "Вокзальная площадь (Station Square)", coords: [41.72203604943866, 44.7977059973804] },
+        { name: "Марджанишвили (Marjanishvili)", coords: [41.70989345523499, 44.797546826215246] },
+        { name: "Руставели (Rustaveli)", coords: [41.70426280170283, 44.789608183885385] },
+        { name: "Площадь Свободы (Liberty Square)", coords: [41.69481818431767, 44.80014626854436] },
+        { name: "Авлабари (Avlabari)", coords: [41.692665905683256, 44.81519156854433] },
+        { name: "300 Арагвинцев (300 Aragveli)", coords: [41.68803816416502, 44.827509368544156] },
+        { name: "Исани (Isani)", coords: [41.68665869138803, 44.84076328203852] },
+        { name: "Самгори (Samgori)", coords: [41.685324, 44.852814] },
+        { name: "Варкетили (Varketili)", coords: [41.69177583352086, 44.86991843970889] },
+        { name: "Проспект Церетели (Tsereteli)", coords: [41.727189507682056, 44.787778539710395] },
+        { name: "Технический Университет (Technical University)", coords: [41.72063046326155, 44.77650872621553] },
+        { name: "Медицинский Университет (Medical University)", coords: [41.727500075613406, 44.76501277179525] },
+        { name: "Делиси (Delisi)", coords: [41.72550380084405, 44.74458712784118] },
+        { name: "Важа-Пшавела (Vazha-Pshavela)", coords: [41.72389636566225, 44.7299279061824] },
+        { name: "Государственный Университет (State University)", coords: [41.722729653659506, 44.71731819628019] }
+      ];
 
-  // Добавление зеленых точек на карту
-  metroStations.forEach(station => {
-    L.circleMarker(station.coords, {
-      radius: 7,
-      fillColor: "#5a8244",
-      color: "#ffffff",
-      weight: 2,
-      opacity: 1,
-      fillOpacity: 0.9
-    }).addTo(map).bindPopup(`<b>м. ${station.name}</b><br>Бесплатная доставка`);
-  });
-}
+      // Добавление зеленых точек на карту
+      metroStations.forEach(station => {
+        L.circleMarker(station.coords, {
+          radius: 7,
+          fillColor: "#5a8244",
+          color: "#ffffff",
+          weight: 2,
+          opacity: 1,
+          fillOpacity: 0.9
+        }).addTo(map).bindPopup(`<b>м. ${station.name}</b><br>Бесплатная доставка`);
+      });
+    }
+
+
+    /* ==========================================================
+       СЧЁТЧИК КАЛОРИЙ
+       ========================================================== */
+
+    // ▼▼▼ ПОРОГИ ДЛЯ СПИДОМЕТРА (в ккал) — впишите свои значения ▼▼▼
+    // Сейчас стоят временные цифры для примера.
+    const CALORIE_GAUGE = {
+      greenTo: 1500,   // зелёная зона:  от 0 до greenTo
+      yellowTo: 2200,  // жёлтая зона:   от greenTo до yellowTo
+      max: 3000        // красная зона:  от yellowTo до max (конец шкалы)
+    };
+    // ▲▲▲ ─────────────────────────────────────────────────── ▲▲▲
+
+    const GAUGE_GEO = { cx: 120, cy: 124, r: 88, start: -120, end: 120, labelR: 106 };
+    const ZONE_COLORS = { green: '#6a9a4f', yellow: '#f2c230', red: '#e74c3c' };
+
+    const kcalUI = {};
+    const kcalState = { visible: false, prevTotal: 0, angle: GAUGE_GEO.start };
+    // Всё, что не «десктоп с мышью», работает как нижняя шторка по нажатию
+    const kcalSheetMQ = window.matchMedia('not all and (min-width: 769px) and (hover: hover)');
+    const kcalReduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    function gaugePoint(r, deg) {
+      const rad = deg * Math.PI / 180;
+      return [GAUGE_GEO.cx + r * Math.sin(rad), GAUGE_GEO.cy - r * Math.cos(rad)];
+    }
+
+    function gaugeAngle(value) {
+      const f = Math.max(0, Math.min(1, value / CALORIE_GAUGE.max));
+      return GAUGE_GEO.start + (GAUGE_GEO.end - GAUGE_GEO.start) * f;
+    }
+
+    function gaugeArc(r, a0, a1) {
+      const [x0, y0] = gaugePoint(r, a0);
+      const [x1, y1] = gaugePoint(r, a1);
+      const large = (a1 - a0) > 180 ? 1 : 0;
+      return `M ${x0.toFixed(2)} ${y0.toFixed(2)} A ${r} ${r} 0 ${large} 1 ${x1.toFixed(2)} ${y1.toFixed(2)}`;
+    }
+
+    function kcalZoneOf(total) {
+      if (total <= CALORIE_GAUGE.greenTo) return 'green';
+      if (total <= CALORIE_GAUGE.yellowTo) return 'yellow';
+      return 'red';
+    }
+
+    function buildGauge() {
+      const { greenTo, yellowTo, max } = CALORIE_GAUGE;
+      const bounds = [0, greenTo, yellowTo, max];
+      const ids = ['green', 'yellow', 'red'];
+      const gap = 0.9; // маленький просвет между секциями, в градусах
+
+      kcalUI.zonesG.innerHTML = ids.map((id, i) => {
+        const a0 = gaugeAngle(bounds[i]) + (i > 0 ? gap : 0);
+        const a1 = gaugeAngle(bounds[i + 1]) - (i < ids.length - 1 ? gap : 0);
+        if (a1 <= a0) return '';
+        return `<path class="kcal-zone" data-zone="${id}" d="${gaugeArc(GAUGE_GEO.r, a0, a1)}" stroke="${ZONE_COLORS[id]}"/>`;
+      }).join('');
+      kcalUI.zones = Array.from(kcalUI.zonesG.querySelectorAll('.kcal-zone'));
+
+      // Риски шкалы: через каждые 5%, каждая пятая — длиннее
+      let ticks = '';
+      for (let i = 0; i <= 20; i++) {
+        const a = GAUGE_GEO.start + (GAUGE_GEO.end - GAUGE_GEO.start) * i / 20;
+        const major = i % 5 === 0;
+        const [x0, y0] = gaugePoint(major ? 63 : 67, a);
+        const [x1, y1] = gaugePoint(73, a);
+        ticks += `<line class="kcal-tick${major ? ' major' : ''}" x1="${x0.toFixed(2)}" y1="${y0.toFixed(2)}" x2="${x1.toFixed(2)}" y2="${y1.toFixed(2)}"/>`;
+      }
+      kcalUI.ticksG.innerHTML = ticks;
+
+      // Подписи границ зон
+      kcalUI.labelsG.innerHTML = bounds.map(v => {
+        const [x, y] = gaugePoint(GAUGE_GEO.labelR, gaugeAngle(v));
+        return `<text class="kcal-gauge-label" x="${x.toFixed(2)}" y="${y.toFixed(2)}" text-anchor="middle" dy="0.35em">${v}</text>`;
+      }).join('');
+    }
+
+    /* Плавный «набег» числа */
+    function kcalTween(el, to, decimals, from) {
+      if (from === undefined) from = (el._cur !== undefined) ? el._cur : 0;
+      cancelAnimationFrame(el._raf);
+
+      const render = v => {
+        el._cur = v;
+        el.textContent = decimals ? String(+v.toFixed(decimals)) : String(Math.round(v));
+      };
+
+      if (kcalReduceMotion.matches || from === to) { render(to); return; }
+
+      const duration = 700;
+      const t0 = performance.now();
+      const step = now => {
+        const t = Math.min(1, (now - t0) / duration);
+        const eased = 1 - Math.pow(1 - t, 3);
+        render(from + (to - from) * eased);
+        if (t < 1) el._raf = requestAnimationFrame(step);
+      };
+      el._raf = requestAnimationFrame(step);
+    }
+
+    function kcalSetNeedle(total, instant) {
+      const angle = gaugeAngle(total);
+      kcalState.angle = angle;
+      const n = kcalUI.needle;
+      if (instant) {
+        n.style.transition = 'none';
+        n.style.transform = `rotate(${angle}deg)`;
+        void n.getBoundingClientRect();
+        n.style.transition = '';
+      } else {
+        n.style.transform = `rotate(${angle}deg)`;
+      }
+    }
+
+    /* Стрелка «выезжает» из нуля при каждом открытии сводки */
+    function kcalSweepNeedle() {
+      if (kcalReduceMotion.matches) return;
+      const n = kcalUI.needle;
+      n.style.transition = 'none';
+      n.style.transform = `rotate(${GAUGE_GEO.start}deg)`;
+      void n.getBoundingClientRect();
+      n.style.transition = '';
+      n.style.transform = `rotate(${kcalState.angle}deg)`;
+    }
+
+    function kcalBump(delta) {
+      if (kcalReduceMotion.matches) return;
+
+      const pill = kcalUI.pill;
+      pill.classList.remove('is-bump');
+      void pill.offsetWidth;
+      pill.classList.add('is-bump');
+
+      if (delta !== 0) {
+        const chip = document.createElement('span');
+        chip.className = 'kcal-delta' + (delta < 0 ? ' neg' : '');
+        chip.textContent = (delta > 0 ? '+' : '−') + Math.abs(delta);
+        chip.addEventListener('animationend', () => chip.remove());
+        kcalUI.anchor.appendChild(chip);
+      }
+    }
+
+    function openKcalSheet() {
+      kcalUI.widget.classList.add('open');
+      kcalUI.pill.setAttribute('aria-expanded', 'true');
+      kcalSweepNeedle();
+    }
+
+    function closeKcalSheet() {
+      kcalUI.widget.classList.remove('open');
+      kcalUI.pill.setAttribute('aria-expanded', 'false');
+    }
+
+    function updateKcalWidget() {
+      if (!kcalUI.widget) return;
+      const L = translations[currentLang];
+
+      // Суммы по всем блюдам в корзине (с учётом количества)
+      const sum = { cal: 0, p: 0, f: 0, c: 0 };
+      cart.forEach(item => {
+        const k = item.kbju || {};
+        sum.cal += (k.calories || 0) * item.count;
+        sum.p += (k.protein || 0) * item.count;
+        sum.f += (k.fat || 0) * item.count;
+        sum.c += (k.carbs || 0) * item.count;
+      });
+      const total = Math.round(sum.cal);
+      const p = Math.round(sum.p * 10) / 10;
+      const f = Math.round(sum.f * 10) / 10;
+      const c = Math.round(sum.c * 10) / 10;
+
+      // Тексты, зависящие от языка
+      const pillLabel = `${L['kcal-open']}: ${total} ${L['cal-label']}`;
+      kcalUI.pill.setAttribute('aria-label', pillLabel);
+      kcalUI.gaugeUnit.textContent = L['cal-label'];
+      kcalUI.close.setAttribute('aria-label', L['kcal-close']);
+      kcalUI.panel.setAttribute('aria-label', L['kcal-title']);
+      kcalUI.gauge.setAttribute('aria-label', `${total} ${L['cal-label']}`);
+
+      // Корзина пуста — плашка уезжает
+      if (cart.length === 0) {
+        if (kcalState.visible) {
+          kcalUI.widget.classList.remove('is-visible');
+          closeKcalSheet();
+          kcalState.visible = false;
+        }
+        kcalState.prevTotal = 0;
+        return;
+      }
+
+      const justShown = !kcalState.visible;
+      const zone = kcalZoneOf(total);
+
+      kcalUI.widget.style.setProperty('--zone', ZONE_COLORS[zone]);
+      kcalUI.zones.forEach(z => z.classList.toggle('is-active', z.dataset.zone === zone));
+      kcalUI.statusText.textContent = L['kcal-status-' + zone];
+
+      if (justShown) {
+        kcalUI.widget.classList.add('is-visible');
+        kcalState.visible = true;
+        kcalSetNeedle(total, true);
+      } else {
+        kcalSetNeedle(total, false);
+      }
+
+      // Числа
+      const from = justShown ? 0 : undefined;
+      kcalTween(kcalUI.num, total, 0, from);
+      kcalTween(kcalUI.gaugeVal, total, 0, from);
+      kcalTween(kcalUI.p, p, 1, from);
+      kcalTween(kcalUI.f, f, 1, from);
+      kcalTween(kcalUI.c, c, 1, from);
+
+      // Баланс БЖУ по энергии: белки и углеводы по 4 ккал/г, жиры — 9 ккал/г
+      const eP = p * 4, eF = f * 9, eC = c * 4;
+      const eSum = eP + eF + eC;
+      const pct = eSum > 0 ? [eP, eF, eC].map(v => Math.round(v / eSum * 100)) : [0, 0, 0];
+      const width = eSum > 0 ? [eP, eF, eC].map(v => v / eSum * 100) : [0, 0, 0];
+      kcalUI.segP.style.width = width[0] + '%';
+      kcalUI.segF.style.width = width[1] + '%';
+      kcalUI.segC.style.width = width[2] + '%';
+      kcalUI.pctP.textContent = pct[0] + '%';
+      kcalUI.pctF.textContent = pct[1] + '%';
+      kcalUI.pctC.textContent = pct[2] + '%';
+
+      // Анимация «что добавилось» — только если сумма реально изменилась
+      const delta = total - kcalState.prevTotal;
+      if (justShown) {
+        if (total > 0) kcalBump(delta);
+      } else if (delta !== 0) {
+        kcalBump(delta);
+      }
+      kcalState.prevTotal = total;
+    }
+
+    function initKcalWidget() {
+      const $ = id => document.getElementById(id);
+      Object.assign(kcalUI, {
+        widget: $('kcal-widget'), anchor: $('kcal-anchor'), pill: $('kcal-pill'),
+        panel: $('kcal-panel'), close: $('kcal-close'), backdrop: $('kcal-backdrop'),
+        gauge: $('kcal-gauge'), zonesG: $('kcal-zones'), ticksG: $('kcal-ticks'),
+        labelsG: $('kcal-labels'), needle: $('kcal-needle'),
+        num: $('kcal-num'), gaugeVal: $('kcal-gauge-val'), gaugeUnit: $('kcal-gauge-unit'),
+        statusText: $('kcal-status-text'),
+        p: $('kcal-p'), f: $('kcal-f'), c: $('kcal-c'),
+        segP: $('kcal-seg-p'), segF: $('kcal-seg-f'), segC: $('kcal-seg-c'),
+        pctP: $('kcal-pct-p'), pctF: $('kcal-pct-f'), pctC: $('kcal-pct-c')
+      });
+
+      buildGauge();
+
+      // Мобильные/сенсорные: нажатие открывает и закрывает шторку
+      kcalUI.pill.addEventListener('click', () => {
+        if (!kcalSheetMQ.matches) return;
+        kcalUI.widget.classList.contains('open') ? closeKcalSheet() : openKcalSheet();
+      });
+      kcalUI.backdrop.addEventListener('click', closeKcalSheet);
+      kcalUI.close.addEventListener('click', closeKcalSheet);
+      document.addEventListener('keydown', e => { if (e.key === 'Escape') closeKcalSheet(); });
+
+      // Десктоп: стрелка «выезжает» при наведении и при фокусе с клавиатуры
+      kcalUI.anchor.addEventListener('mouseenter', () => { if (!kcalSheetMQ.matches) kcalSweepNeedle(); });
+      kcalUI.pill.addEventListener('focus', () => {
+        if (!kcalSheetMQ.matches && kcalUI.pill.matches(':focus-visible')) kcalSweepNeedle();
+      });
+
+      // Смена режима (поворот экрана, изменение окна) — закрыть шторку
+      const onModeChange = () => closeKcalSheet();
+      if (kcalSheetMQ.addEventListener) kcalSheetMQ.addEventListener('change', onModeChange);
+      else if (kcalSheetMQ.addListener) kcalSheetMQ.addListener(onModeChange);
+    }
+
+    initKcalWidget();
 
     renderMenu();
     updateCartUI();
