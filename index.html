@@ -1073,6 +1073,101 @@
         animation: none;
       }
     }
+
+    /* ==========================================================
+       Карусель блюд — ТОЛЬКО мобильная версия (до 768px).
+       Десктоп (от 769px) не затрагивается.
+       ========================================================== */
+    .carousel-pager {
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      .grid {
+        position: relative;
+        grid-template-columns: none;
+        grid-auto-flow: column;
+        grid-auto-columns: min(84vw, 340px);
+        gap: 14px;
+        margin: 0 -20px 40px;
+        padding: 10px 20px 22px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scroll-snap-type: x mandatory;
+        scroll-padding-inline: 20px;
+        overscroll-behavior-x: contain;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+
+      .grid::-webkit-scrollbar {
+        display: none;
+      }
+
+      /* Одно блюдо в блоке — на всю ширину */
+      .grid.is-single {
+        grid-auto-columns: 100%;
+      }
+
+      .grid > .card {
+        scroll-snap-align: start;
+        scroll-snap-stop: always;
+      }
+
+      /* На сенсорных экранах hover «залипает», поэтому карточка не подпрыгивает */
+      .grid > .card:hover {
+        transform: none;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      }
+
+      .carousel-pager.is-active {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: -48px 0 48px;
+      }
+
+      .carousel-dots {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 7px;
+        max-width: 260px;
+      }
+
+      .carousel-dot {
+        position: relative;
+        width: 8px;
+        height: 8px;
+        padding: 0;
+        border: none;
+        border-radius: 50%;
+        background: #c9bba6;
+        cursor: pointer;
+        transition: width 0.3s, background 0.3s;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      /* Увеличенная зона нажатия */
+      .carousel-dot::after {
+        content: '';
+        position: absolute;
+        inset: -10px -4px;
+      }
+
+      .carousel-dot.is-active {
+        width: 22px;
+        border-radius: 5px;
+        background: var(--primary-green);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .carousel-dot {
+        transition-duration: 0.01s;
+      }
+    }
   </style>
 </head>
 <body>
@@ -1377,7 +1472,8 @@
         'kcal-status-yellow': 'Норма',
         'kcal-status-red': 'Перебор',
         'kcal-open': 'Пищевая ценность заказа',
-        'kcal-close': 'Закрыть'
+        'kcal-close': 'Закрыть',
+        'carousel-dish': 'Блюдо'
       },
       en: {
         'hero-title': 'Homemade Lunches in Tbilisi',
@@ -1422,7 +1518,8 @@
         'kcal-status-yellow': 'Normal',
         'kcal-status-red': 'Too much',
         'kcal-open': 'Order nutrition details',
-        'kcal-close': 'Close'
+        'kcal-close': 'Close',
+        'carousel-dish': 'Dish'
       }
     };
 
@@ -1693,6 +1790,7 @@
       if (tomorrowGrid) tomorrowGrid.innerHTML = tomorrowFoodData.map(item => createCardHTML(item)).join('');
       
       checkSchedule();
+      refreshCarousels();
     }
 
     function addToCart(id) {
@@ -2278,6 +2376,109 @@
     }
 
     initKcalWidget();
+
+
+    /* ==========================================================
+       КАРУСЕЛЬ БЛЮД (мобильная версия)
+       Свайп — на CSS (scroll-snap). Здесь только точки и стрелки.
+       ========================================================== */
+    const CAROUSEL_GRID_IDS = [
+      'today-food-grid', 'soups-food-grid', 'salads-food-grid',
+      'desserts-food-grid', 'tomorrow-food-grid'
+    ];
+    const carouselMQ = window.matchMedia('(max-width: 768px)');
+    const carouselReduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const carousels = [];
+
+    function carouselSync(c) {
+      const grid = c.grid;
+      const cards = grid.children;
+      const n = cards.length;
+      if (!n) return;
+
+      const paddingLeft = parseFloat(getComputedStyle(grid).paddingLeft) || 0;
+      const max = grid.scrollWidth - grid.clientWidth;
+      let index = 0;
+
+      if (max > 2) {
+        if (grid.scrollLeft >= max - 2) {
+          index = n - 1; // упёрлись в конец: последняя карточка не всегда встаёт «к левому краю»
+        } else {
+          let best = Infinity;
+          for (let i = 0; i < n; i++) {
+            const diff = Math.abs(cards[i].offsetLeft - paddingLeft - grid.scrollLeft);
+            if (diff < best) { best = diff; index = i; }
+          }
+        }
+      }
+
+      c.index = index;
+      Array.from(c.dots.children).forEach((d, i) => d.classList.toggle('is-active', i === index));
+    }
+
+    function carouselGo(c, i) {
+      const cards = c.grid.children;
+      if (!cards.length) return;
+      i = Math.max(0, Math.min(cards.length - 1, i));
+      const paddingLeft = parseFloat(getComputedStyle(c.grid).paddingLeft) || 0;
+      c.grid.scrollTo({
+        left: cards[i].offsetLeft - paddingLeft,
+        behavior: carouselReduceMotion.matches ? 'auto' : 'smooth'
+      });
+    }
+
+    function refreshCarousels() {
+      const L = translations[currentLang];
+      carousels.forEach(c => {
+        const n = c.grid.children.length;
+        const hidden = getComputedStyle(c.grid).display === 'none';
+
+        c.grid.classList.toggle('is-single', n === 1);
+        c.pager.classList.toggle('is-active', carouselMQ.matches && n > 1 && !hidden);
+
+        c.dots.innerHTML = Array.from({ length: n }, (_, i) =>
+          `<button type="button" class="carousel-dot" data-i="${i}" aria-label="${L['carousel-dish']} ${i + 1} / ${n}"></button>`
+        ).join('');
+
+        carouselSync(c);
+      });
+    }
+
+    function initCarousels() {
+      CAROUSEL_GRID_IDS.forEach(id => {
+        const grid = document.getElementById(id);
+        if (!grid) return;
+
+        const pager = document.createElement('div');
+        pager.className = 'carousel-pager';
+        pager.innerHTML = '<div class="carousel-dots"></div>';
+        grid.insertAdjacentElement('afterend', pager);
+
+        const c = { grid, pager, dots: pager.querySelector('.carousel-dots'), index: 0, raf: 0 };
+        carousels.push(c);
+
+        grid.addEventListener('scroll', () => {
+          if (c.raf) return;
+          c.raf = requestAnimationFrame(() => { c.raf = 0; carouselSync(c); });
+        }, { passive: true });
+
+        pager.addEventListener('click', e => {
+          const dot = e.target.closest('.carousel-dot');
+          if (dot) carouselGo(c, Number(dot.dataset.i));
+        });
+      });
+
+      // Поворот экрана / смена размера окна
+      if (carouselMQ.addEventListener) carouselMQ.addEventListener('change', refreshCarousels);
+      else if (carouselMQ.addListener) carouselMQ.addListener(refreshCarousels);
+      let resizeRaf = 0;
+      window.addEventListener('resize', () => {
+        cancelAnimationFrame(resizeRaf);
+        resizeRaf = requestAnimationFrame(() => carousels.forEach(carouselSync));
+      });
+    }
+
+    initCarousels();
 
     renderMenu();
     updateCartUI();
