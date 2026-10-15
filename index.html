@@ -2019,11 +2019,15 @@
     }
 
     function initMap() {
-      const map = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-  maxZoom: 19,
-  subdomains: 'abcd',
-  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
-}).addTo(map);
+  const map = L.map('map').setView([41.715, 44.82], 12); // центр и зум Тбилиси
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    maxZoom: 19,
+    subdomains: 'abcd',
+    attribution: '&copy; OpenStreetMap &copy; CARTO'
+  }).addTo(map);
+
+  
 
       const tbilisiBounds = [
         [41.7950, 44.7200],
