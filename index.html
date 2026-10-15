@@ -2019,15 +2019,14 @@
     }
 
     function initMap() {
-  const map = L.map('map').setView([41.715, 44.82], 12); // центр и зум Тбилиси
+      const map = L.map('map', { scrollWheelZoom: false });
 
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-    maxZoom: 19,
-    subdomains: 'abcd',
-    attribution: '&copy; OpenStreetMap &copy; CARTO'
-  }).addTo(map);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(map);
 
-  
+      const mapLayers = []; // сюда собираем все зоны и точки, чтобы потом вписать их в кадр
 
       const tbilisiBounds = [
         [41.7950, 44.7200],
@@ -2042,12 +2041,12 @@
         [41.7700, 44.7050]
       ];
 
-      L.polygon(tbilisiBounds, {
+      mapLayers.push(L.polygon(tbilisiBounds, {
         color: '#d4b843',
         fillColor: '#f8e596',
         fillOpacity: 0.35,
         weight: 2
-      }).addTo(map).bindPopup('Желтая зона (Доставка по тарифу Яндекс Go, Bolt)');
+      }).addTo(map).bindPopup('Желтая зона (Доставка по тарифу Яндекс Go, Bolt)'));
 
       const samgoriWalkZone = [
         [41.6930, 44.8510],
@@ -2060,12 +2059,12 @@
         [41.6910, 44.8450]
       ];
 
-      L.polygon(samgoriWalkZone, {
+      mapLayers.push(L.polygon(samgoriWalkZone, {
         color: '#476834',
         fillColor: '#5a8244',
         fillOpacity: 0.5,
         weight: 3
-      }).addTo(map).bindPopup('Зеленая зона (15 мин пешком от м. Самгори и любая другая станция метро — Бесплатно)');
+      }).addTo(map).bindPopup('Зеленая зона (15 мин пешком от м. Самгори и любая другая станция метро — Бесплатно)'));
 
       // Список всех станций метро Тбилиси
       const metroStations = [
@@ -2095,15 +2094,18 @@
 
       // Добавление зеленых точек на карту
       metroStations.forEach(station => {
-        L.circleMarker(station.coords, {
+        mapLayers.push(L.circleMarker(station.coords, {
           radius: 7,
           fillColor: "#5a8244",
           color: "#ffffff",
           weight: 2,
           opacity: 1,
           fillOpacity: 0.9
-        }).addTo(map).bindPopup(`<b>м. ${station.name}</b><br>Бесплатная доставка`);
+        }).addTo(map).bindPopup(`<b>м. ${station.name}</b><br>Бесплатная доставка`));
       });
+
+      // Вписываем карту так, чтобы были видны все зоны и станции метро
+      map.fitBounds(L.featureGroup(mapLayers).getBounds(), { padding: [20, 20] });
     }
 
 
